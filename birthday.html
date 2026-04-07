@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Happy Birthday 💖</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* ========== CSS VARIABLES & RESET ========== */
+:root {
+  --rose:    #f4a0b5;
+  --blush:   #f9c5d1;
+  --lavender:#c9b8e8;
+  --lilac:   #e6d8f7;
+  --peach:   #ffd6b0;
+  --cream:   #fff8f2;
+  --gold:    #d4a24c;
+  --deep:    #5c3358;
+  --text:    #3d2040;
+  --white:   #ffffff;
+
+  --ff-display: 'Playfair Display', serif;
+  --ff-elegant: 'Cormorant Garamond', serif;
+  --ff-script:  'Dancing Script', cursive;
+
+  --ease-smooth: cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ff-elegant);
+  background: var(--cream);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: none; /* custom cursor */
+}
+
+/* ========== CUSTOM CURSOR ========== */
+#cursor {
+  position: fixed;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--rose), var(--lavender));
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%,-50%);
+  transition: transform .12s var(--ease-smooth), opacity .2s;
+  box-shadow: 0 0 10px var(--blush);
+}
+#cursor-trail {
+  position: fixed;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--rose);
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%,-50%);
+  transition: left .22s var(--ease-smooth), top .22s var(--ease-smooth);
+  opacity: .5;
+}
+
+/* ========== PAGE SYSTEM ========== */
+.page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  transition: opacity .7s var(--ease-smooth), transform .7s var(--ease-smooth);
+}
+.page.hidden   { opacity:0; pointer-events:none; transform: translateY(30px); }
+.page.active   { opacity:1; pointer-events:all;  transform: translateY(0); }
+
+/* ========== DARK / LIGHT TOGGLE ========== */
+#theme-toggle {
+  position: fixed;
+  top: 18px; right: 20px;
+  z-index: 9000;
+  background: rgba(255,255,255,.35);
+  border: 1.5px solid var(--blush);
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-family: var(--ff-elegant);
+  font-size: .85rem;
+  cursor: none;
+  backdrop-filter: blur(8px);
+  transition: background .3s, color .3s;
+}
+body.dark {
+  --cream: #1a0f1e;
+  --text:  #f2e4fa;
+  --white: #2a1630;
+}
+body.dark #theme-toggle { background: rgba(90,40,80,.5); color:#f2e4fa; }
+
+/* ========= PAGE PROGRESS DOTS ========= */
+#page-dots {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 10px;
+  z-index: 9000;
+}
+.dot {
+  width:9px; height:9px;
+  border-radius: 50%;
+  background: var(--blush);
+  transition: background .3s, transform .3s;
+  cursor: none;
+}
+.dot.active { background: var(--rose); transform: scale(1.4); }
+
+/* =======================================
+   PAGE 1 — LANDING
+======================================= */
+#page1 {
+  background: linear-gradient(135deg, #ffe4ef 0%, #f3d8f7 40%, #d8e8ff 80%, #ffe8d6 100%);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Particle canvas sits behind everything */
+#particle-canvas {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.landing-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem;
+}
+
+.crown-icon {
+  font-size: 3.5rem;
+  animation: float 3s ease-in-out infinite;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50%      { transform: translateY(-14px) rotate(5deg); }
+}
+
+.landing-title {
+  font-family: var(--ff-display);
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #c0528a, #7b52ab, #d4587e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: .5rem;
+}
+
+.landing-sub {
+  font-family: var(--ff-script);
+  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  color: var(--deep);
+  opacity: .85;
+  margin-bottom: 2.5rem;
+  min-height: 2.5rem; /* reserve space for typing */
+}
+
+/* Typing cursor blink */
+.typing-cursor {
+  display: inline-block;
+  width: 2px; height: 1.1em;
+  background: var(--rose);
+  margin-left: 3px;
+  vertical-align: middle;
+  animation: blink .75s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Enter button */
+.btn-enter {
+  display: inline-block;
+  padding: 14px 48px;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-family: var(--ff-display);
+  font-size: 1.1rem;
+  letter-spacing: .08em;
+  cursor: none;
+  box-shadow: 0 8px 30px rgba(200,100,150,.35);
+  transition: transform .25s, box-shadow .25s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-enter::before {
+  content:'';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.35), transparent);
+  border-radius: inherit;
+}
+.btn-enter:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 14px 40px rgba(200,100,150,.5); }
+
+/* floating hearts animation */
+.float-heart {
+  position: absolute;
+  font-size: 1.4rem;
+  animation: floatUp linear infinite;
+  opacity: .75;
+  pointer-events: none;
+  user-select: none;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) scale(1) rotate(0deg); opacity:.7; }
+  100% { transform: translateY(-110vh) scale(.4) rotate(30deg); opacity:0; }
+}
+
+/* =======================================
+   PAGE 2 — GALLERY
+======================================= */
+#page2 {
+  background: linear-gradient(160deg, #fff0f7 0%, #f5eeff 50%, #eef5ff 100%);
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+
+.page2-hero {
+  text-align: center;
+  padding: 4rem 1rem 2rem;
+}
+.page2-hero h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  background: linear-gradient(135deg, #b054a0, #7b52ab);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.page2-hero p {
+  font-family: var(--ff-elegant);
+  font-size: 1.1rem;
+  color: var(--deep);
+  opacity: .7;
+  margin-top: .5rem;
+}
+
+/* Gallery Grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.gallery-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: none;
+  aspect-ratio: 4/5;
+  box-shadow: 0 6px 30px rgba(180,100,160,.15);
+  transition: transform .35s var(--ease-smooth), box-shadow .35s;
+  background: var(--blush);
+}
+.gallery-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 50px rgba(180,100,160,.3); }
+
+/* Placeholder photo — colourful gradients instead of real photos */
+.gallery-card .photo-bg {
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-size: 3.5rem;
+  text-align:center;
+  padding: 1rem;
+}
+.gallery-card .photo-bg span {
+  font-family: var(--ff-script);
+  font-size: 1rem;
+  color: rgba(255,255,255,.9);
+  margin-top: .5rem;
+  text-align:center;
+}
+.gallery-card .overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(80,20,60,.6) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .35s;
+  display: flex; align-items: flex-end;
+  padding: 16px;
+  color:#fff;
+  font-family: var(--ff-script);
+  font-size: 1rem;
+}
+.gallery-card:hover .overlay { opacity:1; }
+
+/* Memory Timeline */
+.timeline-section {
+  max-width: 700px;
+  margin: 60px auto 0;
+  padding: 0 20px;
+}
+.timeline-section h3 {
+  font-family: var(--ff-display);
+  font-size: 2rem;
+  text-align:center;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #c0528a, #7b52ab);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.timeline-item {
+  display: flex; gap: 20px;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+  opacity:0; transform: translateX(-30px);
+  transition: opacity .6s, transform .6s;
+}
+.timeline-item.visible { opacity:1; transform: none; }
+.timeline-dot {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  box-shadow: 0 4px 16px rgba(200,100,150,.3);
+}
+.timeline-text h4 { font-family: var(--ff-display); font-size:1.1rem; margin-bottom:.3rem; }
+.timeline-text p  { font-size:1rem; opacity:.75; line-height:1.6; }
+
+/* Confetti button */
+.confetti-wrap {
+  text-align: center;
+  margin: 50px 0 20px;
+}
+.btn-confetti {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #f7a8c4, #c9b8e8);
+  border: none; border-radius: 50px;
+  font-family: var(--ff-display);
+  font-size: 1rem; color:#fff;
+  cursor: none;
+  box-shadow: 0 8px 24px rgba(200,100,150,.3);
+  transition: transform .25s, box-shadow .25s;
+}
+.btn-confetti:hover { transform:scale(1.06); box-shadow:0 14px 36px rgba(200,100,150,.45); }
+
+/* Modal */
+#modal {
+  display:none;
+  position:fixed; inset:0;
+  background: rgba(40,10,50,.7);
+  backdrop-filter: blur(6px);
+  z-index:8000;
+  align-items:center; justify-content:center;
+}
+#modal.open { display:flex; }
+.modal-box {
+  background: var(--cream);
+  border-radius: 24px;
+  max-width: 520px; width:90%;
+  padding: 32px;
+  text-align:center;
+  position:relative;
+  animation: popIn .4s var(--ease-smooth);
+}
+@keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+.modal-photo {
+  font-size: 5rem; margin-bottom: 1rem;
+  background: inherit;
+}
+.modal-caption {
+  font-family: var(--ff-script);
+  font-size:1.3rem;
+  color: var(--deep);
+}
+.modal-close {
+  position:absolute; top:12px; right:16px;
+  background:none; border:none;
+  font-size:1.4rem; cursor:none;
+  color:var(--deep); opacity:.6;
+}
+.modal-close:hover { opacity:1; }
+
+/* Next page button */
+.btn-next {
+  display:block;
+  margin: 40px auto 0;
+  padding: 14px 48px;
+  background: linear-gradient(135deg, var(--lavender), var(--rose));
+  color:#fff; border:none; border-radius:50px;
+  font-family: var(--ff-display);
+  font-size:1rem; letter-spacing:.06em;
+  cursor:none;
+  box-shadow: 0 8px 28px rgba(160,100,200,.3);
+  transition: transform .25s, box-shadow .25s;
+}
+.btn-next:hover { transform:translateY(-3px); box-shadow:0 14px 40px rgba(160,100,200,.45); }
+
+/* =======================================
+   PAGE 3 — MAKEUP / WISH
+======================================= */
+#page3 {
+  background: linear-gradient(150deg, #3d0a2a 0%, #6b1a4a 40%, #2a0a3d 80%, #1a0510 100%);
+  min-height: 100vh;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 80px;
+}
+
+/* Glitter overlay */
+#glitter-canvas {
+  position:absolute; inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+
+.page3-content { position:relative; z-index:2; }
+
+/* Makeup floating icons */
+.makeup-float {
+  position:absolute;
+  font-size:2rem;
+  opacity:.35;
+  animation: spinFloat linear infinite;
+  pointer-events:none;
+  z-index:1;
+}
+@keyframes spinFloat {
+  0%   { transform: translateY(0) rotate(0deg); }
+  50%  { transform: translateY(-25px) rotate(180deg); }
+  100% { transform: translateY(0) rotate(360deg); }
+}
+
+/* Page3 hero */
+.page3-hero {
+  text-align:center;
+  padding: 5rem 1rem 2rem;
+}
+.page3-hero .eyebrow {
+  font-family: var(--ff-script);
+  font-size:1.3rem;
+  color: var(--peach);
+  opacity:.8;
+  margin-bottom:.5rem;
+}
+.page3-hero h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  background: linear-gradient(135deg, #ffd6e7, #e8c5f7, #ffd6b0);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.1;
+  margin-bottom:1rem;
+}
+
+/* Story Section */
+.story-section {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.story-block {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,200,220,.2);
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+  opacity:0; transform: translateY(30px);
+  transition: opacity .7s, transform .7s;
+}
+.story-block.visible { opacity:1; transform:none; }
+.story-block .story-emoji { font-size:2rem; margin-bottom:.6rem; display:block; }
+.story-block h4 {
+  font-family: var(--ff-display);
+  font-size:1.2rem;
+  color: var(--blush);
+  margin-bottom:.5rem;
+}
+.story-block p {
+  font-family: var(--ff-elegant);
+  font-size:1.05rem;
+  line-height:1.8;
+  opacity:.85;
+}
+
+/* Big wish */
+.big-wish {
+  text-align:center;
+  padding: 60px 20px;
+  position: relative;
+}
+.big-wish .wish-text {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  background: linear-gradient(90deg, #f9c5d1, #e8c5f7, #ffd6b0, #f9c5d1);
+  background-size: 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation: shimmer 4s linear infinite;
+  line-height:1.2;
+  filter: drop-shadow(0 0 30px rgba(249,197,209,.5));
+}
+@keyframes shimmer { to { background-position: 300% center; } }
+
+.big-wish .wish-sub {
+  font-family: var(--ff-script);
+  font-size: clamp(1.2rem,3.5vw,2rem);
+  color: var(--peach);
+  margin-top:1rem;
+  opacity:.9;
+}
+
+/* Firework canvas */
+#firework-canvas {
+  position:absolute; inset:0;
+  pointer-events:none;
+  z-index:3;
+}
+
+/* Back button */
+.btn-back {
+  display:block;
+  margin: 20px auto;
+  padding: 14px 48px;
+  background: linear-gradient(135deg, rgba(255,200,220,.2), rgba(220,180,255,.2));
+  border: 1.5px solid rgba(255,200,220,.4);
+  color:#fff; border-radius:50px;
+  font-family: var(--ff-display);
+  font-size:1rem;
+  cursor:none;
+  transition: transform .25s, background .25s;
+  backdrop-filter: blur(6px);
+}
+.btn-back:hover { transform:scale(1.05); background: rgba(255,200,220,.25); }
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:600px) {
+  .gallery-grid { grid-template-columns: repeat(2,1fr); gap:12px; }
+  .timeline-item { flex-direction:column; align-items:center; text-align:center; }
+  .story-block { padding:20px; }
+}
+
+/* ========== CONFETTI PIECES (CSS) ========== */
+.confetti-piece {
+  position:fixed;
+  width:10px; height:14px;
+  border-radius:2px;
+  pointer-events:none;
+  z-index:99990;
+  animation: confettiFall 3s ease-in forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(-10vh) rotate(0deg); opacity:1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity:0; }
+}
+
+/* ========= SOUND VISUALISER (subtle wave) ========= */
+#sound-indicator {
+  position:fixed; bottom:60px; left:20px;
+  display:flex; gap:3px; align-items:flex-end;
+  height:24px;
+  z-index:8000;
+  opacity:0;
+  transition: opacity .5s;
+}
+#sound-indicator.playing { opacity:1; }
+.wave-bar {
+  width:4px; border-radius:2px;
+  background: var(--rose);
+  animation: wave 1s ease-in-out infinite;
+}
+.wave-bar:nth-child(2){ animation-delay:.15s; }
+.wave-bar:nth-child(3){ animation-delay:.3s; }
+.wave-bar:nth-child(4){ animation-delay:.45s; }
+@keyframes wave {
+  0%,100%{ height:6px; }
+  50%{ height:20px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- THEME TOGGLE -->
+<button id="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+
+<!-- PAGE DOTS -->
+<div id="page-dots">
+  <div class="dot active" onclick="showPage(1)"></div>
+  <div class="dot" onclick="showPage(2)"></div>
+  <div class="dot" onclick="showPage(3)"></div>
+</div>
+
+<!-- SOUND INDICATOR -->
+<div id="sound-indicator">
+  <div class="wave-bar"></div>
+  <div class="wave-bar"></div>
+  <div class="wave-bar"></div>
+  <div class="wave-bar"></div>
+</div>
+
+<!-- PHOTO MODAL -->
+<div id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-photo" class="modal-photo"></div>
+    <p id="modal-caption" class="modal-caption"></p>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 1 — LANDING
+============================================================ -->
+<div id="page1" class="page active">
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Floating hearts (added by JS) -->
+
+  <div class="landing-content">
+    <span class="crown-icon">👑</span>
+    <h1 class="landing-title" id="landing-title"></h1>
+    <p  class="landing-sub"  id="landing-sub"></p>
+    <button class="btn-enter" id="btn-enter" onclick="enterSite()">
+      ✨ Open Your Gift ✨
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 2 — GALLERY
+============================================================ -->
+<div id="page2" class="page hidden">
+  <div class="page2-hero">
+    <h2>Our Beautiful Memories 📸</h2>
+    <p>Every moment with you is a treasure</p>
+  </div>
+
+  <!-- Gallery grid — add your own photos or keep the emoji placeholders -->
+  <div class="gallery-grid" id="gallery-grid"></div>
+
+  <!-- Timeline -->
+  <div class="timeline-section">
+    <h3>Memory Lane 🌸</h3>
+    <div id="timeline-container"></div>
+  </div>
+
+  <!-- Confetti surprise -->
+  <div class="confetti-wrap">
+    <p style="font-family:var(--ff-script);font-size:1.2rem;color:var(--deep);opacity:.7;margin-bottom:1rem;">
+      Press the button for a little surprise 🎉
+    </p>
+    <button class="btn-confetti" onclick="launchConfetti()">🎊 Surprise Me!</button>
+  </div>
+
+  <!-- Hidden message (revealed on first confetti click) -->
+  <div id="hidden-msg" style="text-align:center;padding:20px;font-family:var(--ff-script);font-size:1.4rem;
+    color:var(--deep);opacity:0;transition:opacity 1s;max-width:600px;margin:0 auto;">
+    "You are the kind of person who makes the whole room shine just by being in it. 💫"
+  </div>
+
+  <button class="btn-next" onclick="showPage(3)">💄 See Your Birthday Wish →</button>
+</div>
+
+<!-- ============================================================
+     PAGE 3 — MAKEUP / WISH
+============================================================ -->
+<div id="page3" class="page hidden">
+  <canvas id="glitter-canvas"></canvas>
+  <canvas id="firework-canvas"></canvas>
+
+  <!-- Floating makeup icons (placed by JS) -->
+
+  <div class="page3-content">
+    <div class="page3-hero">
+      <p class="eyebrow">A message straight from the heart ♥</p>
+      <h2>For the girl who<br/>lights up every room</h2>
+    </div>
+
+    <div class="story-section" id="story-section"></div>
+
+    <div class="big-wish" id="big-wish-section">
+      <canvas id="firework-canvas2" style="position:absolute;inset:0;pointer-events:none;z-index:0;"></canvas>
+      <p class="wish-text" id="wish-text"></p>
+      <p class="wish-sub">May your year be as magical as you are 🌙✨</p>
+    </div>
+
+    <button class="btn-back" onclick="showPage(1)">↩ Replay from Beginning</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* ==================== CONFIG ==================== */
+// 🎀 CHANGE THIS NAME 🎀
+const BIRTHDAY_GIRL = "Sophia";
+
+// Gallery photos — replace emojis with real <img> src if you like
+const galleryData = [
+  { emoji:"🌸", bg:"linear-gradient(135deg,#f9a8d4,#c084fc)", caption:"First day we met 🌷" },
+  { emoji:"🎂", bg:"linear-gradient(135deg,#fcd34d,#f87171)", caption:"The birthday that started it all 🎈" },
+  { emoji:"🌊", bg:"linear-gradient(135deg,#67e8f9,#818cf8)", caption:"Beach day adventures 🏖️" },
+  { emoji:"🌙", bg:"linear-gradient(135deg,#c084fc,#6366f1)", caption:"Late night talks ✨" },
+  { emoji:"🌺", bg:"linear-gradient(135deg,#fb7185,#f9a8d4)", caption:"Garden adventures 🌻" },
+  { emoji:"☕", bg:"linear-gradient(135deg,#d97706,#fcd34d)", caption:"Our favourite café corner ☕" },
+  { emoji:"🎵", bg:"linear-gradient(135deg,#34d399,#60a5fa)", caption:"When that song came on 🎶" },
+  { emoji:"🌈", bg:"linear-gradient(135deg,#f472b6,#38bdf8)", caption:"Rainbow after the storm 🌈" },
+];
+
+// Timeline memories
+const timelineData = [
+  { emoji:"👶", year:"Chapter 1", title:"The Beginning", text:"Before we even knew how important this friendship would become, the universe was already writing our story." },
+  { emoji:"🎓", year:"Chapter 2", title:"Growing Up Together", text:"Through every exam, every heartbreak, every victory lap — we cheered each other on louder than anyone else." },
+  { emoji:"✈️", year:"Chapter 3", title:"Adventures Everywhere", text:"We turned ordinary days into extraordinary ones. Every trip, every spontaneous plan, every 'yes' we said together." },
+  { emoji:"🌟", year:"Today",     title:"Your Best Year Yet", text:"And now, on this beautiful day, all I want to say is: thank you for being exactly who you are." },
+];
+
+// Story blocks on page 3
+const storyData = [
+  { emoji:"💌", title:"A Love Letter to You", text:`Dear ${BIRTHDAY_GIRL}, on this day ${new Date().getFullYear()} years ago, the world got a little more beautiful. You didn't just arrive — you bloomed. And everything around you bloomed with you.` },
+  { emoji:"🌙", title:"The Girl Who Feels Everything", text:"You feel joy so deeply it becomes contagious. You carry sadness with such grace it becomes strength. You are every colour of emotion painted perfectly on a single canvas." },
+  { emoji:"💃", title:"Your Magic is Real", text:"People walk into rooms. You transform them. You have this rare, impossible gift of making everyone feel seen — and that, my love, is the most beautiful superpower there is." },
+  { emoji:"🎂", title:"Today, We Celebrate YOU", text:`Not just the milestones. Not just the highlights. Every single version of you — the strong one, the tired one, the dancing-in-the-rain one. We celebrate ALL of ${BIRTHDAY_GIRL}.` },
+];
+
+/* ==================== PAGE NAVIGATION ==================== */
+let currentPage = 1;
+function showPage(n) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.replace('active','hidden'));
+  document.getElementById('page'+n).classList.replace('hidden','active');
+  currentPage = n;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===n-1));
+  if(n===2) initTimeline();
+  if(n===3) { initGlitter(); initStoryObserver(); setTimeout(startFireworks,1500); }
+  playClickSound();
+}
+
+/* ==================== ENTRY ==================== */
+function enterSite() {
+  startMusic();
+  showPage(2);
+}
+
+/* ==================== TYPING EFFECT ==================== */
+function typeText(el, text, speed=60, cb) {
+  let i=0;
+  el.innerHTML='';
+  const cursor=document.createElement('span');
+  cursor.className='typing-cursor';
+  el.appendChild(cursor);
+  const t=setInterval(()=>{
+    el.insertBefore(document.createTextNode(text[i]),cursor);
+    i++;
+    if(i>=text.length){ clearInterval(t); if(cb) setTimeout(cb,400); }
+  },speed);
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // Populate gallery
+  const grid = document.getElementById('gallery-grid');
+  galleryData.forEach((item,idx)=>{
+    const card=document.createElement('div');
+    card.className='gallery-card';
+    card.innerHTML=`
+      <div class="photo-bg" style="background:${item.bg}">
+        <span>${item.emoji}</span>
+        <span>${item.caption}</span>
+      </div>
+      <div class="overlay">${item.caption}</div>
+    `;
+    card.onclick=()=>openModal(item.emoji, item.caption);
+    grid.appendChild(card);
+  });
+
+  // Populate timeline
+  const tc=document.getElementById('timeline-container');
+  timelineData.forEach(item=>{
+    const el=document.createElement('div');
+    el.className='timeline-item';
+    el.innerHTML=`
+      <div class="timeline-dot">${item.emoji}</div>
+      <div class="timeline-text">
+        <h4>${item.year} — ${item.title}</h4>
+        <p>${item.text}</p>
+      </div>`;
+    tc.appendChild(el);
+  });
+
+  // Populate story blocks
+  const ss=document.getElementById('story-section');
+  storyData.forEach(item=>{
+    const el=document.createElement('div');
+    el.className='story-block';
+    el.innerHTML=`<span class="story-emoji">${item.emoji}</span><h4>${item.title}</h4><p>${item.text}</p>`;
+    ss.appendChild(el);
+  });
+
+  // Typing intro
+  const titleEl=document.getElementById('landing-title');
+  const subEl  =document.getElementById('landing-sub');
+  typeText(titleEl,`Hey ${BIRTHDAY_GIRL} 💖`,80,()=>{
+    typeText(subEl,'Something special is waiting for you...',50);
+  });
+
+  // Floating hearts
+  spawnHearts();
+
+  // Makeup icons on page 3
+  spawnMakeupIcons();
+
+  // Init particles on page 1
+  initParticles();
+
+  // Wish text
+  document.getElementById('wish-text').textContent=`Happy Birthday ${BIRTHDAY_GIRL} 🎂💖`;
+});
+
+/* ==================== PARTICLES (page 1) ==================== */
+function initParticles() {
+  const canvas=document.getElementById('particle-canvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
+
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize',resize);
+
+  const SYMBOLS=['✦','✧','⋆','✺','❋','✿','◌','·'];
+  const COLORS=['#f4a0b5','#c9b8e8','#ffd6b0','#f9c5d1','#d8bdf9'];
+
+  for(let i=0;i<80;i++) particles.push(mkParticle());
+  function mkParticle(){
+    return {
+      x:Math.random()*window.innerWidth,
+      y:Math.random()*window.innerHeight,
+      sym:SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)],
+      color:COLORS[Math.floor(Math.random()*COLORS.length)],
+      size:Math.random()*14+6,
+      vx:(Math.random()-.5)*.4,
+      vy:-(Math.random()*.5+.2),
+      alpha:Math.random()*.6+.3,
+      life:Math.random()*200+100,
+      age:0,
+    };
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach((p,i)=>{
+      p.x+=p.vx; p.y+=p.vy; p.age++;
+      const fade=1-p.age/p.life;
+      ctx.globalAlpha=p.alpha*fade;
+      ctx.fillStyle=p.color;
+      ctx.font=`${p.size}px serif`;
+      ctx.fillText(p.sym,p.x,p.y);
+      if(p.age>=p.life) particles[i]=mkParticle();
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ==================== FLOATING HEARTS (page 1) ==================== */
+function spawnHearts() {
+  const p1=document.getElementById('page1');
+  const symbols=['💖','💕','✨','🌸','💗','⭐','💫','🌷'];
+  for(let i=0;i<18;i++){
+    const h=document.createElement('div');
+    h.className='float-heart';
+    h.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+    const size=Math.random()*1.2+.7;
+    const dur =Math.random()*10+8;
+    const delay=Math.random()*10;
+    h.style.cssText=`
+      left:${Math.random()*100}vw;
+      bottom:-40px;
+      font-size:${size}rem;
+      animation-duration:${dur}s;
+      animation-delay:${delay}s;
+    `;
+    p1.appendChild(h);
+  }
+}
+
+/* ==================== MAKEUP ICONS (page 3) ==================== */
+function spawnMakeupIcons() {
+  const p3=document.getElementById('page3');
+  const icons=['💄','💋','✨','💅','🌸','💎','🪞','🌷'];
+  for(let i=0;i<14;i++){
+    const el=document.createElement('div');
+    el.className='makeup-float';
+    el.textContent=icons[Math.floor(Math.random()*icons.length)];
+    const dur=Math.random()*8+6;
+    el.style.cssText=`
+      left:${Math.random()*95}vw;
+      top:${Math.random()*95}vh;
+      animation-duration:${dur}s;
+      animation-delay:${Math.random()*4}s;
+      font-size:${Math.random()*1.5+1.2}rem;
+    `;
+    p3.appendChild(el);
+  }
+}
+
+/* ==================== GLITTER CANVAS (page 3) ==================== */
+function initGlitter() {
+  const canvas=document.getElementById('glitter-canvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const glitters=Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2.5+.5,
+    alpha:Math.random(),
+    speed:Math.random()*.015+.005,
+    phase:Math.random()*Math.PI*2,
+  }));
+  const COLS=['#ffd6e7','#e8c5f7','#ffd6b0','#ffffff','#f9c5d1'];
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    glitters.forEach(g=>{
+      g.phase+=g.speed;
+      g.alpha=.3+.5*Math.abs(Math.sin(g.phase));
+      ctx.globalAlpha=g.alpha;
+      ctx.beginPath();
+      ctx.arc(g.x,g.y,g.r,0,Math.PI*2);
+      ctx.fillStyle=COLS[Math.floor(Math.random()*COLS.length)];
+      ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    if(currentPage===3) requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ==================== FIREWORKS ==================== */
+function startFireworks() {
+  const canvas=document.getElementById('firework-canvas2');
+  canvas.width=document.getElementById('big-wish-section').offsetWidth;
+  canvas.height=document.getElementById('big-wish-section').offsetHeight;
+  const ctx=canvas.getContext('2d');
+  const COLS=['#f9c5d1','#c9b8e8','#ffd6b0','#ffffff','#e8c5f7','#ffd6e7'];
+  let particles=[];
+
+  function explosion(x,y){
+    for(let i=0;i<60;i++){
+      const angle=Math.random()*Math.PI*2;
+      const speed=Math.random()*5+2;
+      particles.push({
+        x,y,
+        vx:Math.cos(angle)*speed,
+        vy:Math.sin(angle)*speed,
+        alpha:1, r:Math.random()*3+1.5,
+        color:COLS[Math.floor(Math.random()*COLS.length)],
+        decay:Math.random()*.015+.01,
+        gy:.12,
+      });
+    }
+  }
+
+  let frameCount=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    frameCount++;
+    if(frameCount%55===0) explosion(Math.random()*canvas.width, Math.random()*canvas.height*.7+30);
+    particles.forEach((p,i)=>{
+      p.x+=p.vx; p.y+=p.vy; p.vy+=p.gy;
+      p.vx*=.98; p.alpha-=p.decay;
+      if(p.alpha<=0){ particles.splice(i,1); return; }
+      ctx.globalAlpha=p.alpha;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color;
+      ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    if(currentPage===3) requestAnimationFrame(draw);
+  }
+  explosion(canvas.width/2, canvas.height/3);
+  draw();
+}
+
+/* ==================== CONFETTI ==================== */
+function launchConfetti() {
+  const COLS=['#f4a0b5','#c9b8e8','#ffd6b0','#f9c5d1','#d8bdf9','#fff','#fcd34d'];
+  for(let i=0;i<90;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    piece.style.cssText=`
+      left:${Math.random()*100}vw;
+      background:${COLS[Math.floor(Math.random()*COLS.length)]};
+      transform:rotate(${Math.random()*360}deg);
+      animation-delay:${Math.random()*1.2}s;
+      animation-duration:${Math.random()*2+2}s;
+      width:${Math.random()*10+6}px;
+      height:${Math.random()*14+6}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(),4000);
+  }
+  // Reveal hidden message
+  document.getElementById('hidden-msg').style.opacity='1';
+  playClickSound();
+}
+
+/* ==================== MODAL ==================== */
+function openModal(emoji,caption){
+  document.getElementById('modal-photo').textContent=emoji;
+  document.getElementById('modal-caption').textContent=caption;
+  document.getElementById('modal').classList.add('open');
+  playClickSound();
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target===e.currentTarget)closeModal(); });
+
+/* ==================== SCROLL REVEAL ==================== */
+function initTimeline(){
+  const items=document.querySelectorAll('.timeline-item');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.2});
+  items.forEach(i=>obs.observe(i));
+}
+
+function initStoryObserver(){
+  const items=document.querySelectorAll('.story-block');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.15});
+  items.forEach(i=>obs.observe(i));
+}
+
+/* ==================== BACKGROUND MUSIC ==================== */
+// We create a gentle generative tone using Web Audio API (no external file needed)
+let audioCtx=null, musicPlaying=false;
+function startMusic(){
+  if(musicPlaying) return;
+  try{
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const notes=[261.63,293.66,329.63,349.23,392,440,493.88];
+    let idx=0;
+    function playNote(){
+      if(!musicPlaying||!audioCtx) return;
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      const filter=audioCtx.createBiquadFilter();
+      filter.type='lowpass'; filter.frequency.value=800;
+      osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+      osc.type='sine';
+      osc.frequency.value=notes[idx%notes.length]*0.5;
+      gain.gain.setValueAtTime(0,audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(.05,audioCtx.currentTime+.3);
+      gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+1.8);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime+2);
+      idx++;
+      setTimeout(playNote,900+Math.random()*500);
+    }
+    musicPlaying=true;
+    playNote();
+    document.getElementById('sound-indicator').classList.add('playing');
+  }catch(e){}
+}
+
+/* ==================== CLICK SOUND ==================== */
+function playClickSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value=880;
+    osc.type='sine';
+    gain.gain.setValueAtTime(.12,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.18);
+    osc.start(); osc.stop(ctx.currentTime+.2);
+  }catch(e){}
+}
+
+/* ==================== CUSTOM CURSOR ==================== */
+const cursor=document.getElementById('cursor');
+const trail=document.getElementById('cursor-trail');
+document.addEventListener('mousemove',e=>{
+  cursor.style.left=e.clientX+'px';
+  cursor.style.top =e.clientY+'px';
+  trail.style.left =e.clientX+'px';
+  trail.style.top  =e.clientY+'px';
+});
+
+/* ==================== DARK / LIGHT TOGGLE ==================== */
+let darkMode=false;
+function toggleTheme(){
+  darkMode=!darkMode;
+  document.body.classList.toggle('dark',darkMode);
+  document.getElementById('theme-toggle').textContent=darkMode?'☀️ Light':'🌙 Dark';
+  playClickSound();
+}
+
+/* ==================== KEYBOARD NAV ==================== */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') showPage(Math.min(3,currentPage+1));
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   showPage(Math.max(1,currentPage-1));
+});
+</script>
+</body>
+</html>

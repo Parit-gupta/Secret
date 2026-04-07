@@ -1,0 +1,2111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday &#x1F496;</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Dancing+Script:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ===== CSS VARIABLES ===== */
+      :root {
+        --rose: #f4a0b5;
+        --blush: #f9c5d1;
+        --lavender: #c9b8e8;
+        --peach: #ffd6b0;
+        --deep: #5c3358;
+        --bg-body: #fff8f2;
+        --p1-a: #ffe4ef;
+        --p1-b: #f3d8f7;
+        --p1-c: #d8e8ff;
+        --p1-d: #ffe8d6;
+        --p2-a: #fff0f7;
+        --p2-b: #f5eeff;
+        --p2-c: #eef5ff;
+        --text-main: #3d2040;
+        --text-sub: #5c3358;
+        --card-bg: #fdf0f7;
+        --card-border: rgba(244, 160, 181, 0.25);
+        --card-shadow: rgba(180, 100, 160, 0.15);
+        --card-shadow-h: rgba(180, 100, 160, 0.3);
+        --modal-bg: #fff8f2;
+        --modal-overlay: rgba(40, 10, 50, 0.7);
+        --toggle-bg: rgba(255, 255, 255, 0.5);
+        --toggle-border: #f9c5d1;
+        --toggle-color: #3d2040;
+        --timeline-text: #3d2040;
+        --hmsg-color: #5c3358;
+        --dot-inactive: #f9c5d1;
+        --collage-veil: rgba(255, 245, 252, 0.6);
+        --hero-band: rgba(255, 255, 255, 0.22);
+        --hero-band-b: rgba(255, 255, 255, 0.3);
+        --ff-d: "Playfair Display", serif;
+        --ff-e: "Cormorant Garamond", serif;
+        --ff-s: "Dancing Script", cursive;
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      body.dark {
+        --bg-body: #130a1c;
+        --p1-a: #2a0a1e;
+        --p1-b: #1e0a30;
+        --p1-c: #0a1228;
+        --p1-d: #1e100a;
+        --p2-a: #1a0826;
+        --p2-b: #120820;
+        --p2-c: #0d0818;
+        --text-main: #f2e4fa;
+        --text-sub: #d8b8f0;
+        --card-bg: #2a1040;
+        --card-border: rgba(201, 184, 232, 0.22);
+        --card-shadow: rgba(100, 50, 140, 0.4);
+        --card-shadow-h: rgba(140, 80, 180, 0.55);
+        --modal-bg: #1c0c2c;
+        --modal-overlay: rgba(8, 3, 18, 0.85);
+        --toggle-bg: rgba(60, 20, 90, 0.65);
+        --toggle-border: rgba(201, 184, 232, 0.45);
+        --toggle-color: #f2e4fa;
+        --timeline-text: #e8d4f8;
+        --hmsg-color: #d8b8f0;
+        --dot-inactive: rgba(201, 184, 232, 0.35);
+        --collage-veil: rgba(10, 3, 20, 0.65);
+        --hero-band: rgba(20, 8, 35, 0.45);
+        --hero-band-b: rgba(201, 184, 232, 0.18);
+      }
+
+      /* ===== RESET ===== */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      * {
+        transition:
+          background-color 0.4s ease,
+          border-color 0.4s ease,
+          color 0.35s ease,
+          box-shadow 0.4s ease;
+      }
+      /* Fast transitions on motion elements */
+      .page,
+      .gallery-card,
+      .timeline-item,
+      .story-block,
+      .collage-tile,
+      .btn-enter,
+      .btn-next,
+      .btn-back,
+      .btn-confetti,
+      #cursor,
+      #cursor-trail,
+      .float-heart,
+      .wave-bar,
+      .confetti-piece {
+        transition-property:
+          opacity, transform, background-color, border-color, box-shadow, color,
+          filter;
+      }
+
+      /* ===== HTML / BODY =====
+   Body is the ONE scroll container.
+   Pages are display:none (collapsed) or display:block (visible).
+   This eliminates ALL blank space / ghost height bugs. */
+      html {
+        height: 100%;
+        overflow-x: hidden;
+      }
+      body {
+        font-family: var(--ff-e);
+        background: var(--bg-body);
+        color: var(--text-main);
+        cursor: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+        transition:
+          background-color 0.45s ease,
+          color 0.35s ease;
+      }
+
+      /* ===== PAGE SYSTEM =====
+   display:none = 0 height, 0 space.
+   display:block = full natural flow.
+   Never use position:fixed or opacity tricks — they keep height in flow. */
+      .page {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+      }
+      .page.hidden {
+        display: none !important;
+      }
+      .page.active {
+        display: block;
+      }
+
+      /* ===== FIXED UI ===== */
+      #cursor {
+        position: fixed;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--rose), var(--lavender));
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 10px var(--blush);
+      }
+      #cursor-trail {
+        position: fixed;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid var(--rose);
+        pointer-events: none;
+        z-index: 99998;
+        transform: translate(-50%, -50%);
+        opacity: 0.5;
+        transition:
+          left 0.22s var(--ease),
+          top 0.22s var(--ease) !important;
+      }
+      #theme-toggle {
+        position: fixed;
+        top: 18px;
+        right: 20px;
+        z-index: 9000;
+        background: var(--toggle-bg);
+        border: 1.5px solid var(--toggle-border);
+        border-radius: 50px;
+        padding: 6px 18px;
+        font-family: var(--ff-e);
+        font-size: 0.88rem;
+        letter-spacing: 0.04em;
+        color: var(--toggle-color);
+        cursor: none;
+        backdrop-filter: blur(12px);
+      }
+      #theme-toggle:hover {
+        transform: scale(1.06) !important;
+      }
+      #page-dots {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 9000;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--dot-inactive);
+        cursor: none;
+      }
+      .dot.active {
+        background: var(--rose);
+        transform: scale(1.4) !important;
+      }
+      #sound-indicator {
+        position: fixed;
+        bottom: 60px;
+        left: 20px;
+        display: flex;
+        gap: 3px;
+        align-items: flex-end;
+        height: 24px;
+        z-index: 8000;
+        opacity: 0;
+        transition: opacity 0.5s !important;
+      }
+      #sound-indicator.playing {
+        opacity: 1;
+      }
+      .wave-bar {
+        width: 4px;
+        border-radius: 2px;
+        background: var(--rose);
+        animation: wave 1s ease-in-out infinite;
+      }
+      .wave-bar:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .wave-bar:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .wave-bar:nth-child(4) {
+        animation-delay: 0.45s;
+      }
+      @keyframes wave {
+        0%,
+        100% {
+          height: 6px;
+        }
+        50% {
+          height: 20px;
+        }
+      }
+
+      /* =====================================================
+   PAGE 1 — LANDING
+===================================================== */
+      #page1 {
+        background: linear-gradient(
+          135deg,
+          var(--p1-a) 0%,
+          var(--p1-b) 40%,
+          var(--p1-c) 80%,
+          var(--p1-d) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+        position: relative;
+      }
+      #particle-canvas {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .landing-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        padding: 2rem;
+      }
+      .crown-icon {
+        font-size: 3.5rem;
+        display: block;
+        margin-bottom: 1rem;
+        animation: floatCrown 3s ease-in-out infinite;
+      }
+      @keyframes floatCrown {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-5deg);
+        }
+        50% {
+          transform: translateY(-14px) rotate(5deg);
+        }
+      }
+      .landing-title {
+        font-family: var(--ff-d);
+        font-size: clamp(2.8rem, 8vw, 6rem);
+        font-weight: 700;
+        background: linear-gradient(135deg, #c0528a, #7b52ab, #d4587e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+      }
+      .landing-sub {
+        font-family: var(--ff-s);
+        font-size: clamp(1.2rem, 3.5vw, 2rem);
+        color: var(--text-sub);
+        opacity: 0.9;
+        margin-bottom: 2.5rem;
+        min-height: 2.5rem;
+      }
+      .typing-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1.1em;
+        background: var(--rose);
+        margin-left: 3px;
+        vertical-align: middle;
+        animation: blink 0.75s step-end infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+      .btn-enter {
+        display: inline-block;
+        padding: 14px 48px;
+        background: linear-gradient(135deg, var(--rose), var(--lavender));
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        font-family: var(--ff-d);
+        font-size: 1.1rem;
+        letter-spacing: 0.08em;
+        cursor: none;
+        box-shadow: 0 8px 30px rgba(200, 100, 150, 0.35);
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-enter::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        border-radius: inherit;
+      }
+      .btn-enter:hover {
+        transform: translateY(-3px) scale(1.04) !important;
+        box-shadow: 0 14px 40px rgba(200, 100, 150, 0.5) !important;
+      }
+      .float-heart {
+        position: absolute;
+        animation: floatUp linear infinite;
+        opacity: 0.75;
+        pointer-events: none;
+        user-select: none;
+      }
+      @keyframes floatUp {
+        0% {
+          opacity: 0.7;
+          transform: translateY(0) scale(1) rotate(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-110vh) scale(0.4) rotate(30deg);
+        }
+      }
+
+      /* =====================================================
+   PAGE 2 — GALLERY  (cinematic collage background)
+===================================================== */
+      #page2 {
+        background: linear-gradient(
+          160deg,
+          var(--p2-a) 0%,
+          var(--p2-b) 50%,
+          var(--p2-c) 100%
+        );
+        min-height: 100vh;
+        position: relative;
+        padding-bottom: 80px;
+        /* z-index:auto keeps stacking context open so fixed children (collage) show through
+     while page2-inner content at z-index:2 floats above the fixed collage */
+        isolation: auto;
+      }
+
+      /* =====================================================
+   COLLAGE BACKGROUND — No-crop, blurred-fill, auto-rotate
+===================================================== */
+      #collage-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 33.33vh);
+        gap: 3px;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      #collage-bg.active {
+        display: grid;
+      }
+      #collage-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--collage-veil);
+        z-index: 1;
+        pointer-events: none;
+        display: none;
+      }
+      #collage-overlay.active {
+        display: block;
+      }
+      .page2-inner {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* --- Tile wrapper --- */
+      .collage-tile {
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000; /* fallback behind blurred fill */
+        opacity: 0;
+        transform: scale(0.72) translateY(38px);
+        filter: blur(18px) brightness(0.45) saturate(0);
+        transition: none;
+        will-change: transform, opacity, filter;
+      }
+
+      /* Blurred background fill — stretches to cover the whole tile */
+      .collage-tile .tile-blur-bg {
+        position: absolute;
+        inset: -12px; /* slightly oversized so edges don't show hard cut */
+        background-size: cover;
+        background-position: center;
+        filter: blur(14px) brightness(0.6) saturate(0.8);
+        transform: scale(1.08); /* compensate for blur edge bleed */
+        z-index: 0;
+        border-radius: 6px;
+        pointer-events: none;
+      }
+
+      /* Actual image — contained, no crop */
+      .collage-tile .tile-img {
+        position: relative;
+        z-index: 1;
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        border-radius: 3px;
+        /* gentle drop shadow so image floats above blurred bg */
+        filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35));
+        transition:
+          transform 0.6s ease,
+          filter 0.6s ease;
+        will-change: transform;
+      }
+
+      /* Phase 1 — fly in */
+      .collage-tile.assembling {
+        transition:
+          opacity 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 1.5s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0) brightness(1) saturate(1);
+      }
+
+      /* Phase 2 — dreamy multi-axis float
+   Each tile gets its own unique animation via --float-x / --float-y / --float-dur / --float-delay
+   so tiles drift independently — no synchronized bobbing */
+      .collage-tile.floating {
+        animation:
+          tileFloatY var(--float-dur, 7s) ease-in-out infinite
+            var(--float-delay, 0s),
+          tileFloatX var(--float-dur2, 9s) ease-in-out infinite
+            var(--float-delay2, 0s),
+          tileBreath var(--float-dur3, 11s) ease-in-out infinite
+            var(--float-delay3, 0s);
+      }
+      /* vertical drift */
+      @keyframes tileFloatY {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(calc(var(--fy, -7px)));
+        }
+        70% {
+          transform: translateY(calc(var(--fy2, 4px)));
+        }
+      }
+      /* horizontal drift — layered via the img element so it compounds */
+      @keyframes tileFloatX {
+        0%,
+        100% {
+          margin-left: 0;
+        }
+        40% {
+          margin-left: calc(var(--fx, -5px));
+        }
+        80% {
+          margin-left: calc(var(--fx2, 3px));
+        }
+      }
+      /* scale breath */
+      @keyframes tileBreath {
+        0%,
+        100% {
+          opacity: 1;
+          filter: brightness(1) saturate(1);
+        }
+        50% {
+          opacity: 0.93;
+          filter: brightness(1.04) saturate(1.05);
+        }
+      }
+
+      /* Phase 3 — shimmer sweep */
+      .collage-tile::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background: linear-gradient(
+          105deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.18) 50%,
+          transparent 70%
+        );
+        transform: translateX(-110%);
+        transition: none;
+        pointer-events: none;
+        border-radius: 6px;
+      }
+      .collage-tile.shimmer::after {
+        transition: transform 1.2s ease;
+        transform: translateX(160%);
+      }
+
+      /* --- Rotation fade-out / fade-in — tuned for fast 2-4s cycle --- */
+      .collage-tile.tile-leaving {
+        transition:
+          opacity 0.55s ease,
+          transform 0.55s ease,
+          filter 0.55s ease !important;
+        animation: none !important; /* pause float while leaving */
+        opacity: 0 !important;
+        transform: scale(0.94) !important;
+        filter: blur(6px) brightness(0.45) saturate(0) !important;
+      }
+      .collage-tile.tile-entering {
+        animation: none !important;
+        opacity: 0;
+        transform: scale(0.9);
+        filter: blur(12px) brightness(0.4) saturate(0);
+        transition: none;
+      }
+      .collage-tile.tile-entering.tile-in {
+        transition:
+          opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.7s ease !important;
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0) brightness(1) saturate(1);
+      }
+
+      /* --- Responsive grid --- */
+      @media (max-width: 900px) {
+        #collage-bg {
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(4, 25vh);
+        }
+      }
+      @media (max-width: 560px) {
+        #collage-bg {
+          grid-template-columns: repeat(2, 1fr);
+          grid-template-rows: repeat(5, 20vh);
+        }
+      }
+
+      /* ---- Page 2 content ---- */
+      .page2-hero {
+        text-align: center;
+        padding: 4rem 1rem 2rem;
+        background: var(--hero-band);
+        border-bottom: 1px solid var(--hero-band-b);
+        backdrop-filter: blur(6px);
+      }
+      .page2-hero h2 {
+        font-family: var(--ff-d);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        background: linear-gradient(135deg, #b054a0, #7b52ab);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .page2-hero p {
+        font-family: var(--ff-e);
+        font-size: 1.1rem;
+        color: var(--text-sub);
+        opacity: 0.85;
+        margin-top: 0.5rem;
+      }
+
+      /* Gallery grid */
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        max-width: 1100px;
+        margin: 32px auto 0;
+        padding: 0 20px;
+      }
+      .gallery-card {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        cursor: none;
+        aspect-ratio: 4/5;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 6px 30px var(--card-shadow);
+      }
+      .gallery-card:hover {
+        transform: translateY(-8px) scale(1.02) !important;
+        box-shadow: 0 16px 50px var(--card-shadow-h) !important;
+      }
+      .gallery-card .photo-bg {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        text-align: center;
+        padding: 1rem;
+      }
+      .gallery-card .img-bg {
+        padding: 0;
+        overflow: hidden;
+      }
+      .gallery-card .img-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s ease !important;
+      }
+      .gallery-card:hover .img-bg img {
+        transform: scale(1.07);
+      }
+      .gallery-card .photo-bg span {
+        font-family: var(--ff-s);
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 0.5rem;
+      }
+      .gallery-card .overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(80, 20, 60, 0.6) 0%,
+          transparent 60%
+        );
+        opacity: 0;
+        display: flex;
+        align-items: flex-end;
+        padding: 16px;
+        color: #fff;
+        font-family: var(--ff-s);
+        font-size: 1rem;
+        transition: opacity 0.35s !important;
+      }
+      .gallery-card:hover .overlay {
+        opacity: 1;
+      }
+
+      /* Timeline */
+      .timeline-section {
+        max-width: 700px;
+        margin: 60px auto 0;
+        padding: 0 20px;
+      }
+      .timeline-section h3 {
+        font-family: var(--ff-d);
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, #c0528a, #7b52ab);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .timeline-item {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 2rem;
+        align-items: flex-start;
+        opacity: 0;
+        transform: translateX(-30px);
+        transition:
+          opacity 0.6s,
+          transform 0.6s !important;
+      }
+      .timeline-item.visible {
+        opacity: 1;
+        transform: none;
+      }
+      .timeline-dot {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        background: linear-gradient(135deg, var(--rose), var(--lavender));
+        box-shadow: 0 4px 16px rgba(200, 100, 150, 0.3);
+      }
+      .timeline-text h4 {
+        font-family: var(--ff-d);
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+        color: var(--timeline-text);
+      }
+      .timeline-text p {
+        font-size: 1rem;
+        opacity: 0.78;
+        line-height: 1.6;
+        color: var(--text-main);
+      }
+
+      /* Confetti section */
+      .confetti-wrap {
+        text-align: center;
+        margin: 50px 0 20px;
+      }
+      .confetti-wrap > p {
+        font-family: var(--ff-s);
+        font-size: 1.2rem;
+        color: var(--text-sub);
+        opacity: 0.82;
+        margin-bottom: 1rem;
+      }
+      .btn-confetti {
+        padding: 14px 40px;
+        background: linear-gradient(135deg, #f7a8c4, #c9b8e8);
+        border: none;
+        border-radius: 50px;
+        font-family: var(--ff-d);
+        font-size: 1rem;
+        color: #fff;
+        cursor: none;
+        box-shadow: 0 8px 24px rgba(200, 100, 150, 0.3);
+      }
+      .btn-confetti:hover {
+        transform: scale(1.06) !important;
+        box-shadow: 0 14px 36px rgba(200, 100, 150, 0.45) !important;
+      }
+      #hidden-msg {
+        text-align: center;
+        padding: 20px;
+        font-family: var(--ff-s);
+        font-size: 1.4rem;
+        color: var(--hmsg-color);
+        opacity: 0;
+        max-width: 600px;
+        margin: 0 auto;
+        transition: opacity 1s ease !important;
+      }
+      .btn-next {
+        display: block;
+        margin: 40px auto 0;
+        padding: 14px 48px;
+        background: linear-gradient(135deg, var(--lavender), var(--rose));
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        font-family: var(--ff-d);
+        font-size: 1rem;
+        letter-spacing: 0.06em;
+        cursor: none;
+        box-shadow: 0 8px 28px rgba(160, 100, 200, 0.3);
+      }
+      .btn-next:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 14px 40px rgba(160, 100, 200, 0.45) !important;
+      }
+
+      /* Modal */
+      #modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--modal-overlay);
+        backdrop-filter: blur(7px);
+        z-index: 8000;
+        align-items: center;
+        justify-content: center;
+      }
+      #modal.open {
+        display: flex;
+      }
+      .modal-box {
+        background: var(--modal-bg);
+        border-radius: 24px;
+        max-width: 520px;
+        width: 90%;
+        padding: 32px;
+        text-align: center;
+        position: relative;
+        border: 1px solid var(--card-border);
+        animation: popIn 0.4s var(--ease);
+      }
+      @keyframes popIn {
+        from {
+          transform: scale(0.85);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .modal-photo {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+      }
+      .modal-caption {
+        font-family: var(--ff-s);
+        font-size: 1.3rem;
+        color: var(--text-sub);
+      }
+      .modal-close {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: none;
+        color: var(--text-main);
+        opacity: 0.6;
+      }
+      .modal-close:hover {
+        opacity: 1 !important;
+      }
+
+      /* =====================================================
+   PAGE 3 — MAKEUP / WISH
+   Critical rules:
+   • No overflow:hidden (content must scroll freely)
+   • position:absolute canvases inside their containers
+   • makeup-float: position:absolute (NOT fixed), % coords
+   • padding-top is tight — no extra space
+===================================================== */
+      #page3 {
+        background: linear-gradient(
+          150deg,
+          #3d0a2a 0%,
+          #6b1a4a 40%,
+          #2a0a3d 80%,
+          #1a0510 100%
+        );
+        min-height: 100vh;
+        color: #fff;
+        position: relative;
+        padding-bottom: 80px;
+      }
+      #glitter-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .page3-content {
+        position: relative;
+        z-index: 2;
+      }
+      .makeup-float {
+        position: absolute;
+        opacity: 0.3;
+        animation: spinFloat linear infinite;
+        pointer-events: none;
+        z-index: 1;
+      }
+      @keyframes spinFloat {
+        0% {
+          transform: translateY(0) rotate(0);
+        }
+        50% {
+          transform: translateY(-20px) rotate(180deg);
+        }
+        100% {
+          transform: translateY(0) rotate(360deg);
+        }
+      }
+      .page3-hero {
+        text-align: center;
+        padding: 2.5rem 1rem 2rem;
+      }
+      .page3-hero .eyebrow {
+        font-family: var(--ff-s);
+        font-size: 1.3rem;
+        color: var(--peach);
+        opacity: 0.8;
+        margin-bottom: 0.5rem;
+      }
+      .page3-hero h2 {
+        font-family: var(--ff-d);
+        font-size: clamp(2.2rem, 6vw, 4.5rem);
+        background: linear-gradient(135deg, #ffd6e7, #e8c5f7, #ffd6b0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+      }
+      .story-section {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .story-block {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 200, 220, 0.2);
+        border-radius: 20px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(8px);
+        /* scroll-reveal base state */
+        opacity: 0;
+        transform: translateY(48px) scale(0.97);
+        filter: blur(4px);
+        transition:
+          opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.8s ease !important;
+      }
+      .story-block.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+      .story-block .story-emoji {
+        font-size: 2rem;
+        margin-bottom: 0.6rem;
+        display: block;
+      }
+
+      /* ---- Scroll-reveal classes for ALL page-3 elements ---- */
+      /* Base hidden state applied by JS before IntersectionObserver fires */
+      .sr-hidden {
+        opacity: 0;
+        transform: translateY(52px) scale(0.96);
+        filter: blur(5px);
+        transition:
+          opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.85s ease !important;
+      }
+      .sr-hidden.sr-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+      /* Eyebrow line slides in from left */
+      .sr-left {
+        opacity: 0;
+        transform: translateX(-40px);
+        filter: blur(4px);
+        transition:
+          opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.8s ease !important;
+      }
+      .sr-left.sr-visible {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+      }
+      /* Heading drops in from top */
+      .sr-top {
+        opacity: 0;
+        transform: translateY(-36px) scale(0.97);
+        filter: blur(4px);
+        transition:
+          opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.85s ease !important;
+      }
+      .sr-top.sr-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+      /* Big wish text: scale + glow in */
+      .sr-wish {
+        opacity: 0;
+        transform: scale(0.88);
+        filter: blur(8px) brightness(0.6);
+        transition:
+          opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 1s ease !important;
+      }
+      .sr-wish.sr-visible {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0) brightness(1);
+      }
+      .story-block h4 {
+        font-family: var(--ff-d);
+        font-size: 1.2rem;
+        color: var(--blush);
+        margin-bottom: 0.5rem;
+      }
+      .story-block p {
+        font-family: var(--ff-e);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        opacity: 0.85;
+      }
+      .big-wish {
+        text-align: center;
+        padding: 60px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .big-wish .wish-text {
+        font-family: var(--ff-d);
+        font-size: clamp(2rem, 6vw, 4.5rem);
+        background: linear-gradient(90deg, #f9c5d1, #e8c5f7, #ffd6b0, #f9c5d1);
+        background-size: 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 4s linear infinite;
+        line-height: 1.2;
+        filter: drop-shadow(0 0 30px rgba(249, 197, 209, 0.5));
+      }
+      @keyframes shimmer {
+        to {
+          background-position: 300% center;
+        }
+      }
+      .big-wish .wish-sub {
+        font-family: var(--ff-s);
+        font-size: clamp(1.2rem, 3.5vw, 2rem);
+        color: var(--peach);
+        margin-top: 1rem;
+        opacity: 0.9;
+      }
+      #firework-canvas2 {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .btn-back {
+        display: block;
+        margin: 20px auto 0;
+        padding: 14px 48px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 200, 220, 0.2),
+          rgba(220, 180, 255, 0.2)
+        );
+        border: 1.5px solid rgba(255, 200, 220, 0.4);
+        color: #fff;
+        border-radius: 50px;
+        font-family: var(--ff-d);
+        font-size: 1rem;
+        cursor: none;
+        backdrop-filter: blur(6px);
+      }
+      .btn-back:hover {
+        transform: scale(1.05) !important;
+        background: rgba(255, 200, 220, 0.25) !important;
+      }
+
+      /* Confetti pieces */
+      .confetti-piece {
+        position: fixed;
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 99990;
+        animation: confettiFall 3s ease-in forwards;
+      }
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-10vh) rotate(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 480px) {
+        .gallery-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+        .timeline-item {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .story-block {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fixed UI -->
+    <div id="cursor"></div>
+    <div id="cursor-trail"></div>
+    <button id="theme-toggle" onclick="toggleTheme()">&#127769; Dark</button>
+    <div id="page-dots">
+      <div class="dot active" onclick="showPage(1)"></div>
+      <div class="dot" onclick="showPage(2)"></div>
+      <div class="dot" onclick="showPage(3)"></div>
+    </div>
+    <div id="sound-indicator">
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">&#10005;</button>
+        <div id="modal-photo" class="modal-photo"></div>
+        <p id="modal-caption" class="modal-caption"></p>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 1 — LANDING ========== -->
+    <div id="page1" class="page active">
+      <canvas id="particle-canvas"></canvas>
+      <div class="landing-content">
+        <span class="crown-icon">&#128081;</span>
+        <h1 class="landing-title" id="landing-title"></h1>
+        <p class="landing-sub" id="landing-sub"></p>
+        <button class="btn-enter" onclick="enterSite()">
+          &#10024; Open Your Gift &#10024;
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 2 — GALLERY ========== -->
+    <div id="page2" class="page hidden">
+      <div id="collage-bg"></div>
+      <div id="collage-overlay"></div>
+      <div class="page2-inner">
+        <div class="page2-hero">
+          <h2>Our Beautiful Memories &#128248;</h2>
+          <p>Every moment with you is a treasure</p>
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+        <div class="timeline-section">
+          <h3>Memory Lane &#127800;</h3>
+          <div id="timeline-container"></div>
+        </div>
+        <div class="confetti-wrap">
+          <p>Press the button for a little surprise &#127881;</p>
+          <button class="btn-confetti" onclick="launchConfetti()">
+            &#127882; Surprise Me!
+          </button>
+        </div>
+        <div id="hidden-msg">
+          "You are the kind of person who makes the whole room shine just by
+          being in it. &#10025;"
+        </div>
+        <button class="btn-next" onclick="showPage(3)">
+          &#128132; See Your Birthday Wish &#8594;
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 3 — WISH ========== -->
+    <div id="page3" class="page hidden">
+      <canvas id="glitter-canvas"></canvas>
+      <div class="page3-content">
+        <div class="page3-hero">
+          <p class="eyebrow sr-left">
+            A message straight from the heart &#9829;
+          </p>
+          <h2 class="sr-top">For the girl who<br />lights up every room</h2>
+        </div>
+        <div class="story-section" id="story-section"></div>
+        <div class="big-wish" id="big-wish-section">
+          <canvas id="firework-canvas2"></canvas>
+          <p class="wish-text sr-wish" id="wish-text"></p>
+          <p class="wish-sub sr-hidden" style="transition-delay: 0.3s">
+            May your year be as magical as you are &#127769;&#10024;
+          </p>
+        </div>
+        <button
+          class="btn-back sr-hidden"
+          style="transition-delay: 0.5s"
+          onclick="showPage(1)"
+        >
+          &#8617; Replay from Beginning
+        </button>
+      </div>
+    </div>
+
+    <script>
+      /* ===== CONFIG ===== */
+      const BIRTHDAY_GIRL = "Sophia"; // Change this name!
+
+      // Your images — place 1.jpeg … 20.jpeg inside an "images/" folder next to this HTML file
+      const galleryData = [
+        { img: "images/1.jpeg", caption: "First day we met \uD83C\uDF37" },
+        {
+          img: "images/2.jpeg",
+          caption: "The birthday that started it all \uD83C\uDF88",
+        },
+        {
+          img: "images/3.jpeg",
+          caption: "Beach day adventures \uD83C\uDFD6\uFE0F",
+        },
+        { img: "images/4.jpeg", caption: "Late night talks \u2728" },
+        { img: "images/5.jpeg", caption: "Garden adventures \uD83C\uDF3B" },
+        {
+          img: "images/6.jpeg",
+          caption: "Our favourite caf\u00E9 corner \u2615",
+        },
+        {
+          img: "images/7.jpeg",
+          caption: "When that song came on \uD83C\uDFB6",
+        },
+        {
+          img: "images/8.jpeg",
+          caption: "Rainbow after the storm \uD83C\uDF08",
+        },
+        { img: "images/9.jpeg", caption: "One of a kind moment \u2764\uFE0F" },
+        {
+          img: "images/10.jpeg",
+          caption: "Memories we'll never forget \uD83C\uDF1F",
+        },
+        { img: "images/11.jpeg", caption: "Pure happiness \uD83D\uDE0D" },
+        { img: "images/12.jpeg", caption: "Together always \uD83D\uDC96" },
+      ];
+      const timelineData = [
+        {
+          emoji: "\uD83D\uDC76",
+          year: "Chapter 1",
+          title: "The Beginning",
+          text: "Before we even knew how important this friendship would become, the universe was already writing our story.",
+        },
+        {
+          emoji: "\uD83C\uDF93",
+          year: "Chapter 2",
+          title: "Growing Up Together",
+          text: "Through every exam, every heartbreak, every victory lap \u2014 we cheered each other on louder than anyone else.",
+        },
+        {
+          emoji: "\u2708\uFE0F",
+          year: "Chapter 3",
+          title: "Adventures Everywhere",
+          text: "We turned ordinary days into extraordinary ones. Every trip, every spontaneous plan, every 'yes' we said together.",
+        },
+        {
+          emoji: "\uD83C\uDF1F",
+          year: "Today",
+          title: "Your Best Year Yet",
+          text: "And now, on this beautiful day, all I want to say is: thank you for being exactly who you are.",
+        },
+      ];
+      const storyData = [
+        {
+          emoji: "\uD83D\uDC8C",
+          title: "A Love Letter to You",
+          text: `Dear ${BIRTHDAY_GIRL}, on this day the world got a little more beautiful. You didn\u2019t just arrive \u2014 you bloomed. And everything around you bloomed with you.`,
+        },
+        {
+          emoji: "\uD83C\uDF19",
+          title: "The Girl Who Feels Everything",
+          text: "You feel joy so deeply it becomes contagious. You carry sadness with such grace it becomes strength. You are every colour of emotion painted perfectly on a single canvas.",
+        },
+        {
+          emoji: "\uD83D\uDC83",
+          title: "Your Magic is Real",
+          text: "People walk into rooms. You transform them. You have this rare, impossible gift of making everyone feel seen \u2014 and that, my love, is the most beautiful superpower there is.",
+        },
+        {
+          emoji: "\uD83C\uDF82",
+          title: "Today, We Celebrate YOU",
+          text: `Not just the milestones. Not just the highlights. Every single version of you \u2014 the strong one, the tired one, the dancing-in-the-rain one. We celebrate ALL of ${BIRTHDAY_GIRL}.`,
+        },
+      ];
+
+      let currentPage = 1,
+        collageBuilt = false,
+        darkMode = false;
+
+      /* ===== PAGE SWITCHING =====
+   Key: scroll reset BEFORE DOM swap prevents blank-space glitch.
+   display:none collapses page to 0px so no height is leaked. */
+      function showPage(n) {
+        // 1. Reset scroll position first
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+
+        // 2. Swap visibility
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.replace("active", "hidden"));
+        document
+          .getElementById("page" + n)
+          .classList.replace("hidden", "active");
+        currentPage = n;
+
+        // 3. Force scroll reset after repaint (belt-and-suspenders)
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+        });
+
+        // 4. Update dots
+        document
+          .querySelectorAll(".dot")
+          .forEach((d, i) => d.classList.toggle("active", i === n - 1));
+
+        // 5. Page-specific init
+        // Show/hide fixed collage only on page 2
+        const collBg = document.getElementById("collage-bg");
+        const collOv = document.getElementById("collage-overlay");
+        if (n === 2) {
+          collBg.classList.add("active");
+          collOv.classList.add("active");
+          initTimeline();
+          if (!collageBuilt) {
+            buildCinematicCollage();
+            collageBuilt = true;
+          } else {
+            _rebuildQueue();
+            _scheduleNext();
+          } // resume rotation if returning
+        } else {
+          collBg.classList.remove("active");
+          collOv.classList.remove("active");
+          stopCollageRotation(); // pause rotation while off page 2
+        }
+        if (n === 3) {
+          initGlitter();
+          staggerRevealStories();
+          setTimeout(startFireworks, 1500);
+        }
+        playClickSound();
+      }
+      function enterSite() {
+        startMusic();
+        showPage(2);
+      }
+
+      /* ===== CINEMATIC COLLAGE — No-crop, blurred fill, auto-rotate =====
+   • object-fit:contain keeps full image visible, no cropping
+   • blurred duplicate fills the empty space behind the image
+   • Preloads all 20 images up front to prevent flicker
+   • Rotates every 8s: smooth per-tile fade-out → swap → fade-in
+   • Works on mobile (2-col), tablet (3-col), desktop (4-col)       */
+
+      const ALL_IMGS = Array.from(
+        { length: 20 },
+        (_, i) => `images/${i + 1}.jpeg`,
+      );
+      let _preloaded = false;
+      let _collagePool = []; // currently displayed src per tile index
+      let _collageInterval = null; // auto-rotate timer
+      let _tileEls = []; // live tile DOM nodes
+
+      /* --- Preload all images silently --- */
+      function preloadAllImages(cb) {
+        if (_preloaded) {
+          cb();
+          return;
+        }
+        let done = 0;
+        ALL_IMGS.forEach((src) => {
+          const img = new Image();
+          img.onload = img.onerror = () => {
+            if (++done === ALL_IMGS.length) {
+              _preloaded = true;
+              cb();
+            }
+          };
+          img.src = src;
+        });
+      }
+
+      /* --- Build one tile's inner HTML (blurred bg + contained image) --- */
+      function makeTileContent(src) {
+        // blurBg div uses background-image so it fills/covers the cell
+        const wrap = document.createDocumentFragment();
+        const bg = document.createElement("div");
+        bg.className = "tile-blur-bg";
+        bg.style.backgroundImage = `url('${src}')`;
+
+        const img = document.createElement("img");
+        img.className = "tile-img";
+        img.src = src;
+        img.alt = "memory";
+        img.onerror = function () {
+          bg.style.backgroundImage = "linear-gradient(135deg,#f9a8d4,#c084fc)";
+          this.style.display = "none";
+        };
+
+        wrap.appendChild(bg);
+        wrap.appendChild(img);
+        return wrap;
+      }
+
+      /* --- Helper: random signed value between ±lo and ±hi px --- */
+      function rng(lo, hi) {
+        return (
+          (
+            (Math.random() * (hi - lo) + lo) *
+            (Math.random() < 0.5 ? 1 : -1)
+          ).toFixed(1) + "px"
+        );
+      }
+
+      /* --- Initial cinematic build (first visit to page 2) --- */
+      function buildCinematicCollage() {
+        const container = document.getElementById("collage-bg");
+        container.innerHTML = "";
+        _tileEls = [];
+
+        const shuffled = [...ALL_IMGS].sort(() => Math.random() - 0.5);
+        _collagePool = shuffled.slice(0, 12);
+
+        preloadAllImages(() => {
+          _collagePool.forEach((src, idx) => {
+            const tile = document.createElement("div");
+            tile.className = "collage-tile";
+
+            // Rich, unique float params per tile so nothing moves in sync
+            tile.style.setProperty(
+              "--float-dur",
+              (6 + Math.random() * 5).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-dur2",
+              (8 + Math.random() * 6).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-dur3",
+              (10 + Math.random() * 7).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-delay",
+              (Math.random() * 4).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-delay2",
+              (Math.random() * 5).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-delay3",
+              (Math.random() * 6).toFixed(1) + "s",
+            );
+            tile.style.setProperty("--fy", rng(4, 9));
+            tile.style.setProperty("--fy2", rng(2, 6));
+            tile.style.setProperty("--fx", rng(3, 7));
+            tile.style.setProperty("--fx2", rng(2, 5));
+
+            tile.appendChild(makeTileContent(src));
+            container.appendChild(tile);
+            _tileEls.push(tile);
+
+            const assembleAt = 250 + idx * 130;
+            const shimmerAt = assembleAt + 1200;
+            const floatAt = assembleAt + 1600;
+
+            setTimeout(() => tile.classList.add("assembling"), assembleAt);
+            setTimeout(() => tile.classList.add("shimmer"), shimmerAt);
+            setTimeout(() => tile.classList.add("floating"), floatAt);
+          });
+
+          // Start rotating after initial reveal completes
+          const totalAssembly = 250 + 11 * 130 + 1800;
+          setTimeout(startCollageRotation, totalAssembly);
+        });
+      }
+
+      /* --- Auto-rotate: swap ONE tile every 2.5–4s (staggered, never jarring) ---
+   By swapping only 1 tile at a time on a short interval the collage feels
+   continuously alive without any two tiles changing simultaneously.         */
+      let _rotateQueue = []; // shuffled tile indices waiting their turn
+
+      function startCollageRotation() {
+        if (_collageInterval) clearInterval(_collageInterval);
+        _rebuildQueue();
+        // Pick a new tile every 2.5–3.5s — random jitter keeps it organic
+        _scheduleNext();
+      }
+
+      function _rebuildQueue() {
+        _rotateQueue = [...Array(_tileEls.length).keys()].sort(
+          () => Math.random() - 0.5,
+        );
+      }
+
+      function _scheduleNext() {
+        const delay = 2500 + Math.random() * 1000; // 2.5–3.5s
+        _collageInterval = setTimeout(() => {
+          rotateSomeTiles();
+          _scheduleNext();
+        }, delay);
+      }
+
+      function stopCollageRotation() {
+        if (_collageInterval) {
+          clearTimeout(_collageInterval);
+          _collageInterval = null;
+        }
+      }
+
+      function rotateSomeTiles() {
+        if (!_tileEls.length) return;
+
+        // Pop next tile from queue; refill when exhausted
+        if (!_rotateQueue.length) _rebuildQueue();
+        const tileIdx = _rotateQueue.pop();
+        const tile = _tileEls[tileIdx];
+        if (!tile) return;
+
+        // Pick a replacement not currently shown
+        const remaining = ALL_IMGS.filter((s) => !_collagePool.includes(s));
+        const pool = remaining.length ? remaining : [...ALL_IMGS];
+        const newSrc = pool[Math.floor(Math.random() * pool.length)];
+
+        // Phase A: fade out (0.55s)
+        tile.classList.add("tile-leaving");
+
+        setTimeout(() => {
+          // Phase B: swap while invisible
+          tile.classList.remove(
+            "assembling",
+            "floating",
+            "shimmer",
+            "tile-leaving",
+          );
+          tile.classList.add("tile-entering");
+          tile.innerHTML = "";
+          tile.appendChild(makeTileContent(newSrc));
+          _collagePool[tileIdx] = newSrc;
+
+          // Reassign fresh float params so each return feels different
+          tile.style.setProperty(
+            "--float-dur",
+            (6 + Math.random() * 5).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-dur2",
+            (8 + Math.random() * 6).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-dur3",
+            (10 + Math.random() * 7).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-delay",
+            (Math.random() * 3).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-delay2",
+            (Math.random() * 4).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-delay3",
+            (Math.random() * 5).toFixed(1) + "s",
+          );
+          tile.style.setProperty("--fy", rng(4, 9));
+          tile.style.setProperty("--fy2", rng(2, 6));
+          tile.style.setProperty("--fx", rng(3, 7));
+          tile.style.setProperty("--fx2", rng(2, 5));
+
+          // Phase C: fade in (0.7s)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              tile.classList.add("tile-in");
+              setTimeout(() => {
+                tile.classList.remove("tile-entering", "tile-in");
+                tile.classList.add("assembling");
+                setTimeout(() => {
+                  tile.classList.add("shimmer");
+                  tile.classList.add("floating");
+                }, 900);
+              }, 750);
+            });
+          });
+        }, 580); // slightly longer than fade-out (0.55s) to ensure it's gone
+      }
+
+      /* ===== TYPING EFFECT ===== */
+      function typeText(el, text, speed, cb) {
+        speed = speed || 60;
+        let i = 0;
+        el.innerHTML = "";
+        const cur = document.createElement("span");
+        cur.className = "typing-cursor";
+        el.appendChild(cur);
+        const t = setInterval(() => {
+          el.insertBefore(document.createTextNode(text[i]), cur);
+          i++;
+          if (i >= text.length) {
+            clearInterval(t);
+            if (cb) setTimeout(cb, 400);
+          }
+        }, speed);
+      }
+
+      /* ===== DOM READY ===== */
+      window.addEventListener("DOMContentLoaded", () => {
+        // Restore saved theme (silent — no click sound on load)
+        if (localStorage.getItem("bdayTheme") === "dark")
+          applyTheme(true, false);
+
+        // Build gallery
+        const grid = document.getElementById("gallery-grid");
+        galleryData.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "gallery-card";
+          card.innerHTML = `<div class="photo-bg img-bg"><img src="${item.img}" alt="${item.caption}" loading="lazy" onerror="this.parentElement.style.background='linear-gradient(135deg,#f9a8d4,#c084fc)';this.style.display='none'"/></div><div class="overlay">${item.caption}</div>`;
+          card.onclick = () => openModalImg(item.img, item.caption);
+          grid.appendChild(card);
+        });
+
+        // Build timeline
+        const tc = document.getElementById("timeline-container");
+        timelineData.forEach((item) => {
+          const el = document.createElement("div");
+          el.className = "timeline-item";
+          el.innerHTML = `<div class="timeline-dot">${item.emoji}</div><div class="timeline-text"><h4>${item.year} \u2014 ${item.title}</h4><p>${item.text}</p></div>`;
+          tc.appendChild(el);
+        });
+
+        // Build story blocks
+        const ss = document.getElementById("story-section");
+        storyData.forEach((item) => {
+          const el = document.createElement("div");
+          el.className = "story-block";
+          el.innerHTML = `<span class="story-emoji">${item.emoji}</span><h4>${item.title}</h4><p>${item.text}</p>`;
+          ss.appendChild(el);
+        });
+
+        // Typing intro
+        typeText(
+          document.getElementById("landing-title"),
+          `Hey ${BIRTHDAY_GIRL} \uD83D\uDC96`,
+          80,
+          () => {
+            typeText(
+              document.getElementById("landing-sub"),
+              "Something special is waiting for you...",
+              50,
+            );
+          },
+        );
+
+        spawnHearts();
+        spawnMakeupIcons();
+        initParticles();
+        document.getElementById("wish-text").textContent =
+          `Happy Birthday ${BIRTHDAY_GIRL} \uD83C\uDF82\uD83D\uDC96`;
+      });
+
+      /* ===== PAGE 3 SCROLL REVEAL =====
+   IntersectionObserver watches every .sr-hidden and .story-block element.
+   When an element enters the viewport it gains the visible class.
+   A small cascade delay per element gives a wave-like feel.
+   Called fresh each time page 3 is shown so re-entrances work. */
+      function staggerRevealStories() {
+        // Reset all animated elements to hidden
+        document
+          .querySelectorAll(".story-block,.sr-hidden,.sr-left,.sr-top,.sr-wish")
+          .forEach((el) => {
+            el.classList.remove("visible", "sr-visible");
+          });
+
+        // Observe story blocks (scroll reveal)
+        const storyObs = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((e) => {
+              if (!e.isIntersecting) return;
+              const idx = Array.from(
+                document.querySelectorAll(".story-block"),
+              ).indexOf(e.target);
+              setTimeout(() => e.target.classList.add("visible"), idx * 120);
+              obs.unobserve(e.target);
+            });
+          },
+          { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+        );
+        document
+          .querySelectorAll(".story-block")
+          .forEach((b) => storyObs.observe(b));
+
+        // Observe sr-* elements (hero, wish, button)
+        const srObs = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((e) => {
+              if (!e.isIntersecting) return;
+              e.target.classList.add("sr-visible");
+              obs.unobserve(e.target);
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -30px 0px" },
+        );
+        document
+          .querySelectorAll(".sr-hidden,.sr-left,.sr-top,.sr-wish")
+          .forEach((el) => srObs.observe(el));
+      }
+
+      /* ===== PARTICLES (page 1) ===== */
+      function initParticles() {
+        const canvas = document.getElementById("particle-canvas"),
+          ctx = canvas.getContext("2d");
+        let W,
+          H,
+          ps = [];
+        function resize() {
+          W = canvas.width = innerWidth;
+          H = canvas.height = innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+        const SYM = [
+          "\u2736",
+          "\u2737",
+          "\u22C6",
+          "\u273A",
+          "\u274B",
+          "\u273F",
+          "\u25CC",
+          "\u00B7",
+        ];
+        const COL = ["#f4a0b5", "#c9b8e8", "#ffd6b0", "#f9c5d1", "#d8bdf9"];
+        function mk() {
+          return {
+            x: Math.random() * innerWidth,
+            y: Math.random() * innerHeight,
+            sym: SYM[Math.floor(Math.random() * SYM.length)],
+            color: COL[Math.floor(Math.random() * COL.length)],
+            size: Math.random() * 14 + 6,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: -(Math.random() * 0.5 + 0.2),
+            alpha: Math.random() * 0.6 + 0.3,
+            life: Math.random() * 200 + 100,
+            age: 0,
+          };
+        }
+        for (let i = 0; i < 80; i++) ps.push(mk());
+        (function draw() {
+          ctx.clearRect(0, 0, W, H);
+          ps.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.age++;
+            ctx.globalAlpha = p.alpha * (1 - p.age / p.life);
+            ctx.fillStyle = p.color;
+            ctx.font = p.size + "px serif";
+            ctx.fillText(p.sym, p.x, p.y);
+            if (p.age >= p.life) ps[i] = mk();
+          });
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(draw);
+        })();
+      }
+
+      /* ===== FLOATING HEARTS (page 1) ===== */
+      function spawnHearts() {
+        const p1 = document.getElementById("page1");
+        const s = [
+          "\uD83D\uDC96",
+          "\uD83D\uDC95",
+          "\u2728",
+          "\uD83C\uDF38",
+          "\uD83D\uDC97",
+          "\u2B50",
+          "\uD83D\uDCAB",
+          "\uD83C\uDF37",
+        ];
+        for (let i = 0; i < 18; i++) {
+          const h = document.createElement("div");
+          h.className = "float-heart";
+          h.textContent = s[Math.floor(Math.random() * s.length)];
+          h.style.cssText = `left:${Math.random() * 100}%;bottom:-40px;font-size:${Math.random() * 1.2 + 0.7}rem;animation-duration:${Math.random() * 10 + 8}s;animation-delay:${Math.random() * 10}s;`;
+          p1.appendChild(h);
+        }
+      }
+
+      /* ===== MAKEUP ICONS (page 3) =====
+   position:absolute with % coords.
+   % is relative to #page3 (positioned ancestor) — no viewport leak. */
+      function spawnMakeupIcons() {
+        const p3 = document.getElementById("page3");
+        const ic = [
+          "\uD83D\uDC84",
+          "\uD83D\uDC8B",
+          "\u2728",
+          "\uD83D\uDC85",
+          "\uD83C\uDF38",
+          "\uD83D\uDC8E",
+          "\uD83E\uDEDE",
+          "\uD83C\uDF37",
+        ];
+        ic.concat(ic).forEach((icon) => {
+          const el = document.createElement("div");
+          el.className = "makeup-float";
+          el.textContent = icon;
+          el.style.cssText = `left:${Math.random() * 90}%;top:${10 + Math.random() * 75}%;font-size:${Math.random() * 1.5 + 1.2}rem;animation-duration:${Math.random() * 8 + 6}s;animation-delay:${Math.random() * 4}s;`;
+          p3.appendChild(el);
+        });
+      }
+
+      /* ===== GLITTER CANVAS (page 3) ===== */
+      function initGlitter() {
+        const c = document.getElementById("glitter-canvas"),
+          ctx = c.getContext("2d");
+        c.width = innerWidth;
+        c.height = innerHeight;
+        const COLS = ["#ffd6e7", "#e8c5f7", "#ffd6b0", "#fff", "#f9c5d1"];
+        const gs = Array.from({ length: 120 }, () => ({
+          x: Math.random() * c.width,
+          y: Math.random() * c.height,
+          r: Math.random() * 2.5 + 0.5,
+          alpha: Math.random(),
+          speed: Math.random() * 0.015 + 0.005,
+          phase: Math.random() * Math.PI * 2,
+        }));
+        (function draw() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          gs.forEach((g) => {
+            g.phase += g.speed;
+            g.alpha = 0.3 + 0.5 * Math.abs(Math.sin(g.phase));
+            ctx.globalAlpha = g.alpha;
+            ctx.beginPath();
+            ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+            ctx.fillStyle = COLS[Math.floor(Math.random() * COLS.length)];
+            ctx.fill();
+          });
+          ctx.globalAlpha = 1;
+          if (currentPage === 3) requestAnimationFrame(draw);
+        })();
+      }
+
+      /* ===== FIREWORKS (page 3) ===== */
+      function startFireworks() {
+        const c = document.getElementById("firework-canvas2");
+        const sec = document.getElementById("big-wish-section");
+        c.width = sec.offsetWidth;
+        c.height = sec.offsetHeight;
+        const ctx = c.getContext("2d");
+        const COLS = [
+          "#f9c5d1",
+          "#c9b8e8",
+          "#ffd6b0",
+          "#fff",
+          "#e8c5f7",
+          "#ffd6e7",
+        ];
+        let ps = [],
+          frame = 0;
+        function boom(x, y) {
+          for (let i = 0; i < 60; i++) {
+            const a = Math.random() * Math.PI * 2,
+              s = Math.random() * 5 + 2;
+            ps.push({
+              x,
+              y,
+              vx: Math.cos(a) * s,
+              vy: Math.sin(a) * s,
+              alpha: 1,
+              r: Math.random() * 3 + 1.5,
+              color: COLS[Math.floor(Math.random() * COLS.length)],
+              decay: Math.random() * 0.015 + 0.01,
+              gy: 0.12,
+            });
+          }
+        }
+        (function draw() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          frame++;
+          if (frame % 55 === 0)
+            boom(Math.random() * c.width, Math.random() * c.height * 0.7 + 30);
+          ps.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += p.gy;
+            p.vx *= 0.98;
+            p.alpha -= p.decay;
+            if (p.alpha <= 0) {
+              ps.splice(i, 1);
+              return;
+            }
+            ctx.globalAlpha = p.alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+          });
+          ctx.globalAlpha = 1;
+          if (currentPage === 3) requestAnimationFrame(draw);
+        })();
+        boom(c.width / 2, c.height / 3);
+      }
+
+      /* ===== CONFETTI ===== */
+      function launchConfetti() {
+        const COLS = [
+          "#f4a0b5",
+          "#c9b8e8",
+          "#ffd6b0",
+          "#f9c5d1",
+          "#d8bdf9",
+          "#fff",
+          "#fcd34d",
+        ];
+        for (let i = 0; i < 90; i++) {
+          const p = document.createElement("div");
+          p.className = "confetti-piece";
+          p.style.cssText = `left:${Math.random() * 100}vw;background:${COLS[Math.floor(Math.random() * COLS.length)]};transform:rotate(${Math.random() * 360}deg);animation-delay:${Math.random() * 1.2}s;animation-duration:${Math.random() * 2 + 2}s;width:${Math.random() * 10 + 6}px;height:${Math.random() * 14 + 6}px;border-radius:${Math.random() > 0.5 ? "50%" : "2px"};`;
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), 4000);
+        }
+        document.getElementById("hidden-msg").style.opacity = "1";
+        playClickSound();
+      }
+
+      /* ===== MODAL ===== */
+      function openModal(emoji, caption) {
+        const ph = document.getElementById("modal-photo");
+        ph.innerHTML = "";
+        ph.textContent = emoji;
+        document.getElementById("modal-caption").textContent = caption;
+        document.getElementById("modal").classList.add("open");
+        playClickSound();
+      }
+      function openModalImg(src, caption) {
+        const ph = document.getElementById("modal-photo");
+        ph.innerHTML = `<img src="${src}" alt="${caption}" style="width:100%;max-height:60vh;object-fit:contain;border-radius:12px;display:block;margin:0 auto"/>`;
+        document.getElementById("modal-caption").textContent = caption;
+        document.getElementById("modal").classList.add("open");
+        playClickSound();
+      }
+      function closeModal() {
+        document.getElementById("modal").classList.remove("open");
+      }
+      document.getElementById("modal").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
+
+      /* ===== TIMELINE SCROLL REVEAL ===== */
+      function initTimeline() {
+        const obs = new IntersectionObserver(
+          (es) =>
+            es.forEach((e) => {
+              if (e.isIntersecting) e.target.classList.add("visible");
+            }),
+          { threshold: 0.2 },
+        );
+        document
+          .querySelectorAll(".timeline-item")
+          .forEach((i) => obs.observe(i));
+      }
+
+      /* ===== BACKGROUND MUSIC (Web Audio API — no file needed) ===== */
+      let audioCtx = null,
+        musicPlaying = false;
+      function startMusic() {
+        if (musicPlaying) return;
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const notes = [261.63, 293.66, 329.63, 349.23, 392, 440, 493.88];
+          let idx = 0;
+          function playNote() {
+            if (!musicPlaying || !audioCtx) return;
+            const osc = audioCtx.createOscillator(),
+              gain = audioCtx.createGain(),
+              flt = audioCtx.createBiquadFilter();
+            flt.type = "lowpass";
+            flt.frequency.value = 800;
+            osc.connect(flt);
+            flt.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = "sine";
+            osc.frequency.value = notes[idx % notes.length] * 0.5;
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.3);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.8);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 2);
+            idx++;
+            setTimeout(playNote, 900 + Math.random() * 500);
+          }
+          musicPlaying = true;
+          playNote();
+          document.getElementById("sound-indicator").classList.add("playing");
+        } catch (e) {}
+      }
+
+      /* ===== CLICK SOUND ===== */
+      function playClickSound() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)(),
+            osc = ctx.createOscillator(),
+            gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.value = 880;
+          osc.type = "sine";
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.2);
+        } catch (e) {}
+      }
+
+      /* ===== CUSTOM CURSOR ===== */
+      const curEl = document.getElementById("cursor"),
+        trEl = document.getElementById("cursor-trail");
+      document.addEventListener("mousemove", (e) => {
+        curEl.style.left = e.clientX + "px";
+        curEl.style.top = e.clientY + "px";
+        trEl.style.left = e.clientX + "px";
+        trEl.style.top = e.clientY + "px";
+      });
+
+      /* ===== DARK / LIGHT THEME =====
+   applyTheme(isDark, withSound)
+   Toggles body.dark → all CSS token vars flip via cascade.
+   Saves to localStorage for persistence across reloads. */
+      function applyTheme(isDark, withSound) {
+        if (withSound === undefined) withSound = true;
+        darkMode = isDark;
+        document.body.classList.toggle("dark", darkMode);
+        document.getElementById("theme-toggle").textContent = darkMode
+          ? "\u2600\uFE0F Light"
+          : "\uD83C\uDF19 Dark";
+        localStorage.setItem("bdayTheme", darkMode ? "dark" : "light");
+        if (withSound) playClickSound();
+      }
+      function toggleTheme() {
+        applyTheme(!darkMode);
+      }
+
+      /* ===== KEYBOARD NAVIGATION ===== */
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown")
+          showPage(Math.min(3, currentPage + 1));
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp")
+          showPage(Math.max(1, currentPage - 1));
+      });
+    </script>
+  </body>
+</html>
