@@ -3,54 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Happy Birthday 💖</title>
+    <title>Happy Birthday &#x1F496;</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Dancing+Script:wght@600;700&display=swap"
       rel="stylesheet"
     />
-
-    <!--
-      ╔══════════════════════════════════════════════════════════════════════╗
-      ║  IMAGE LOADING OPTIMISATION — overview                              ║
-      ║                                                                     ║
-      ║  1. LINK REL=PRELOAD  — browser fetches the first 6 collage images  ║
-      ║     in parallel with the HTML parse (highest priority, no JS wait). ║
-      ║     The rest are loaded by the JS preloader below.                  ║
-      ║                                                                     ║
-      ║  2. PROMISE.ALL PRELOADER — buildCinematicCollage() now calls       ║
-      ║     preloadImages(urls) which returns a Promise that resolves only  ║
-      ║     when every <img> fires onload/onerror.  Animation is gated      ║
-      ║     behind this promise — tiles never appear blank.                 ║
-      ║                                                                     ║
-      ║  3. SKELETON GRID — while the promise is pending the collage area   ║
-      ║     shows animated gradient placeholders (same grid layout) so the  ║
-      ║     page feels alive immediately.                                   ║
-      ║                                                                     ║
-      ║  4. STAGGERED BATCH ROTATION — instead of swapping tiles randomly,  ║
-      ║     replacements are pre-loaded before the swap starts, eliminating ║
-      ║     the blank-flash that caused the "images load slowly" symptom.  ║
-      ║                                                                     ║
-      ║  5. CACHE MAP — a Map<src, HTMLImageElement> stores every decoded   ║
-      ║     image object.  DOM tiles reuse these objects (src reassignment  ║
-      ║     hits the HTTP cache; the decoded bitmap is already in memory).  ║
-      ║                                                                     ║
-      ║  6. LOADING="eager" on collage tile <img> tags — prevents the       ║
-      ║     browser from deferring offscreen images that are inside a       ║
-      ║     position:fixed grid.                                            ║
-      ║                                                                     ║
-      ║  7. IMAGE PATHS — consistent relative paths (images/N.jpeg).        ║
-      ║     Replace with your own hosted paths or a CDN URL prefix.        ║
-      ╚══════════════════════════════════════════════════════════════════════╝
-    -->
-
-    <!-- Preload the first 6 collage images (critical above-the-fold assets) -->
-    <link rel="preload" as="image" href="images/1.jpeg" />
-    <link rel="preload" as="image" href="images/2.jpeg" />
-    <link rel="preload" as="image" href="images/3.jpeg" />
-    <link rel="preload" as="image" href="images/4.jpeg" />
-    <link rel="preload" as="image" href="images/5.jpeg" />
-    <link rel="preload" as="image" href="images/6.jpeg" />
-
     <style>
       /* ===== CSS VARIABLES ===== */
       :root {
@@ -88,10 +45,6 @@
         --ff-e: "Cormorant Garamond", serif;
         --ff-s: "Dancing Script", cursive;
         --ease: cubic-bezier(0.4, 0, 0.2, 1);
-
-        /* ── Skeleton shimmer colours (light mode) ── */
-        --skel-base: #f0daea;
-        --skel-shine: #faeaf3;
       }
       body.dark {
         --bg-body: #130a1c;
@@ -119,8 +72,6 @@
         --collage-veil: rgba(10, 3, 20, 0.65);
         --hero-band: rgba(20, 8, 35, 0.45);
         --hero-band-b: rgba(201, 184, 232, 0.18);
-        --skel-base: #2a1040;
-        --skel-shine: #3d1a58;
       }
 
       /* ===== RESET ===== */
@@ -138,6 +89,7 @@
           color 0.35s ease,
           box-shadow 0.4s ease;
       }
+      /* Fast transitions on motion elements */
       .page,
       .gallery-card,
       .timeline-item,
@@ -157,6 +109,10 @@
           filter;
       }
 
+      /* ===== HTML / BODY =====
+   Body is the ONE scroll container.
+   Pages are display:none (collapsed) or display:block (visible).
+   This eliminates ALL blank space / ghost height bugs. */
       html {
         height: 100%;
         overflow-x: hidden;
@@ -173,7 +129,10 @@
           color 0.35s ease;
       }
 
-      /* ===== PAGE SYSTEM ===== */
+      /* ===== PAGE SYSTEM =====
+   display:none = 0 height, 0 space.
+   display:block = full natural flow.
+   Never use position:fixed or opacity tricks — they keep height in flow. */
       .page {
         position: relative;
         width: 100%;
@@ -292,8 +251,8 @@
       }
 
       /* =====================================================
-         POWDER BURST INTRO OVERLAY
-      ===================================================== */
+   POWDER BURST INTRO OVERLAY
+===================================================== */
       #burst-overlay {
         position: fixed;
         inset: 0;
@@ -317,6 +276,7 @@
         height: 100%;
         pointer-events: none;
       }
+      /* The compression orb — white background means orb is a dark/colored dot */
       #burst-orb {
         position: relative;
         z-index: 2;
@@ -353,8 +313,8 @@
       }
 
       /* =====================================================
-         PAGE 1 — LANDING
-      ===================================================== */
+   PAGE 1 — LANDING
+===================================================== */
       #page1 {
         background: linear-gradient(
           135deg,
@@ -485,8 +445,8 @@
       }
 
       /* =====================================================
-         PAGE 2 — GALLERY
-      ===================================================== */
+   PAGE 2 — GALLERY  (cinematic collage background)
+===================================================== */
       #page2 {
         background: linear-gradient(
           160deg,
@@ -497,12 +457,14 @@
         min-height: 100vh;
         position: relative;
         padding-bottom: 80px;
+        /* z-index:auto keeps stacking context open so fixed children (collage) show through
+     while page2-inner content at z-index:2 floats above the fixed collage */
         isolation: auto;
       }
 
       /* =====================================================
-         COLLAGE BACKGROUND
-      ===================================================== */
+   COLLAGE BACKGROUND — No-crop, blurred-fill, auto-rotate
+===================================================== */
       #collage-bg {
         position: fixed;
         top: 0;
@@ -520,7 +482,6 @@
       #collage-bg.active {
         display: grid;
       }
-
       #collage-overlay {
         position: fixed;
         top: 0;
@@ -535,13 +496,12 @@
       #collage-overlay.active {
         display: block;
       }
-
       .page2-inner {
         position: relative;
         z-index: 2;
       }
 
-      /* ── Skeleton placeholder tile ── */
+      /* --- Tile wrapper --- */
       .collage-tile {
         position: relative;
         overflow: hidden;
@@ -549,7 +509,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--skel-base);
+        background: #000; /* fallback behind blurred fill */
         opacity: 0;
         transform: scale(0.72) translateY(38px);
         filter: blur(18px) brightness(0.45) saturate(0);
@@ -557,60 +517,20 @@
         will-change: transform, opacity, filter;
       }
 
-      /* Animated skeleton shimmer — visible while images load */
-      .collage-tile.skeleton::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          90deg,
-          transparent 25%,
-          var(--skel-shine) 50%,
-          transparent 75%
-        );
-        background-size: 200% 100%;
-        animation: skelShimmer 1.6s ease-in-out infinite;
-        z-index: 3;
-        border-radius: 6px;
-      }
-      @keyframes skelShimmer {
-        0% {
-          background-position: 200% 0;
-        }
-        100% {
-          background-position: -200% 0;
-        }
-      }
-      /* Remove shimmer once real content arrives */
-      .collage-tile:not(.skeleton)::after {
-        animation: none;
-        background: linear-gradient(
-          105deg,
-          transparent 30%,
-          rgba(255, 255, 255, 0.18) 50%,
-          transparent 70%
-        );
-        transform: translateX(-110%);
-        transition: none;
-        pointer-events: none;
-        border-radius: 6px;
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 2;
-      }
-
+      /* Blurred background fill — stretches to cover the whole tile */
       .collage-tile .tile-blur-bg {
         position: absolute;
-        inset: -12px;
+        inset: -12px; /* slightly oversized so edges don't show hard cut */
         background-size: cover;
         background-position: center;
         filter: blur(14px) brightness(0.6) saturate(0.8);
-        transform: scale(1.08);
+        transform: scale(1.08); /* compensate for blur edge bleed */
         z-index: 0;
         border-radius: 6px;
         pointer-events: none;
       }
+
+      /* Actual image — contained, no crop */
       .collage-tile .tile-img {
         position: relative;
         z-index: 1;
@@ -621,6 +541,7 @@
         object-fit: contain;
         display: block;
         border-radius: 3px;
+        /* gentle drop shadow so image floats above blurred bg */
         filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35));
         transition:
           transform 0.6s ease,
@@ -628,6 +549,7 @@
         will-change: transform;
       }
 
+      /* Phase 1 — fly in */
       .collage-tile.assembling {
         transition:
           opacity 1.3s cubic-bezier(0.22, 1, 0.36, 1),
@@ -637,6 +559,10 @@
         transform: scale(1) translateY(0);
         filter: blur(0) brightness(1) saturate(1);
       }
+
+      /* Phase 2 — dreamy multi-axis float
+   Each tile gets its own unique animation via --float-x / --float-y / --float-dur / --float-delay
+   so tiles drift independently — no synchronized bobbing */
       .collage-tile.floating {
         animation:
           tileFloatY var(--float-dur, 7s) ease-in-out infinite
@@ -646,6 +572,7 @@
           tileBreath var(--float-dur3, 11s) ease-in-out infinite
             var(--float-delay3, 0s);
       }
+      /* vertical drift */
       @keyframes tileFloatY {
         0%,
         100% {
@@ -658,6 +585,7 @@
           transform: translateY(calc(var(--fy2, 4px)));
         }
       }
+      /* horizontal drift — layered via the img element so it compounds */
       @keyframes tileFloatX {
         0%,
         100% {
@@ -670,6 +598,7 @@
           margin-left: calc(var(--fx2, 3px));
         }
       }
+      /* scale breath */
       @keyframes tileBreath {
         0%,
         100% {
@@ -681,16 +610,36 @@
           filter: brightness(1.04) saturate(1.05);
         }
       }
-      .collage-tile.shimmer:not(.skeleton)::after {
+
+      /* Phase 3 — shimmer sweep */
+      .collage-tile::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background: linear-gradient(
+          105deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.18) 50%,
+          transparent 70%
+        );
+        transform: translateX(-110%);
+        transition: none;
+        pointer-events: none;
+        border-radius: 6px;
+      }
+      .collage-tile.shimmer::after {
         transition: transform 1.2s ease;
         transform: translateX(160%);
       }
+
+      /* --- Rotation fade-out / fade-in — tuned for fast 2-4s cycle --- */
       .collage-tile.tile-leaving {
         transition:
           opacity 0.55s ease,
           transform 0.55s ease,
           filter 0.55s ease !important;
-        animation: none !important;
+        animation: none !important; /* pause float while leaving */
         opacity: 0 !important;
         transform: scale(0.94) !important;
         filter: blur(6px) brightness(0.45) saturate(0) !important;
@@ -712,6 +661,7 @@
         filter: blur(0) brightness(1) saturate(1);
       }
 
+      /* --- Responsive grid --- */
       @media (max-width: 900px) {
         #collage-bg {
           grid-template-columns: repeat(3, 1fr);
@@ -725,7 +675,7 @@
         }
       }
 
-      /* ── Page 2 content ── */
+      /* ---- Page 2 content ---- */
       .page2-hero {
         text-align: center;
         padding: 4rem 1rem 2rem;
@@ -749,28 +699,7 @@
         margin-top: 0.5rem;
       }
 
-      /* Loading status badge */
-      #collage-status {
-        position: fixed;
-        bottom: 55px;
-        right: 18px;
-        z-index: 9001;
-        background: rgba(244, 160, 181, 0.92);
-        color: #3d2040;
-        font-family: var(--ff-e);
-        font-size: 0.8rem;
-        padding: 5px 14px;
-        border-radius: 30px;
-        backdrop-filter: blur(8px);
-        opacity: 0;
-        transition: opacity 0.4s ease !important;
-        pointer-events: none;
-      }
-      #collage-status.visible {
-        opacity: 1;
-      }
-
-      /* Gallery grid */
+      /* ── Gallery grid ── */
       .gallery-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -779,11 +708,15 @@
         margin: 32px auto 0;
         padding: 0 20px;
       }
+
+      /* ── Outer card shell — only hover lift, no overflow:hidden so 3D works ── */
       .gallery-card {
         position: relative;
         aspect-ratio: 4/5;
         cursor: none;
+        /* 3-D perspective per card */
         perspective: 900px;
+        /* lift on hover — applied to shell so it doesn't interrupt flip */
         transition:
           transform 0.35s var(--ease),
           box-shadow 0.35s var(--ease) !important;
@@ -793,6 +726,8 @@
         transform: translateY(-8px) scale(1.03);
         filter: drop-shadow(0 16px 32px rgba(180, 80, 160, 0.28));
       }
+
+      /* ── Inner flipper — rotates on click ── */
       .card-inner {
         position: absolute;
         inset: 0;
@@ -803,6 +738,8 @@
       .gallery-card.flipped .card-inner {
         transform: rotateY(180deg);
       }
+
+      /* ── Shared face styles ── */
       .card-front,
       .card-back {
         position: absolute;
@@ -812,6 +749,10 @@
         -webkit-backface-visibility: hidden;
         overflow: hidden;
       }
+
+      /* ════════════════════════════════
+         FRONT FACE — sentence + gradient bg
+         ════════════════════════════════ */
       .card-front {
         display: flex;
         flex-direction: column;
@@ -822,9 +763,11 @@
         border: 1px solid var(--card-border);
         box-shadow: 0 6px 30px var(--card-shadow);
         background: var(--card-bg);
+        /* blurred image hint bleeds through — set by JS inline */
         background-size: cover;
         background-position: center;
       }
+      /* Dreamy frosted veil over the blurred bg */
       .card-front::before {
         content: "";
         position: absolute;
@@ -847,6 +790,7 @@
           rgba(13, 8, 24, 0.85) 100%
         );
       }
+      /* Subtle shimmer ring on hover */
       .card-front::after {
         content: "";
         position: absolute;
@@ -863,6 +807,8 @@
       .gallery-card:not(.flipped):hover .card-front::after {
         opacity: 1;
       }
+
+      /* Memory number badge */
       .card-number {
         position: absolute;
         top: 14px;
@@ -874,6 +820,7 @@
         letter-spacing: 0.06em;
         z-index: 1;
       }
+      /* Tap hint */
       .card-hint {
         position: absolute;
         bottom: 14px;
@@ -888,6 +835,8 @@
       .gallery-card:not(.flipped):hover .card-hint {
         opacity: 0.9;
       }
+
+      /* The memory sentence */
       .card-sentence {
         position: relative;
         z-index: 1;
@@ -895,15 +844,19 @@
         font-size: clamp(0.95rem, 2vw, 1.15rem);
         line-height: 1.6;
         color: var(--text-main);
+        /* soft text glow */
         text-shadow: 0 0 20px rgba(244, 160, 181, 0.35);
         padding: 0 4px;
       }
+      /* Decorative quote marks */
       .card-sentence::before {
         content: "\201C";
       }
       .card-sentence::after {
         content: "\201D";
       }
+
+      /* Flower emoji accent */
       .card-accent {
         position: relative;
         z-index: 1;
@@ -920,6 +873,8 @@
           transform: scale(1.12) rotate(4deg);
         }
       }
+
+      /* Glow ring that pulses on the front face */
       .card-glow {
         position: absolute;
         inset: -2px;
@@ -938,6 +893,10 @@
       .gallery-card:not(.flipped):hover .card-glow {
         opacity: 0.5;
       }
+
+      /* ════════════════════════════════
+         BACK FACE — the real photo
+         ════════════════════════════════ */
       .card-back {
         transform: rotateY(180deg);
         background: #000;
@@ -955,6 +914,7 @@
       .gallery-card.flipped:hover .card-back img {
         transform: scale(1.04);
       }
+      /* Caption ribbon on photo */
       .card-back .photo-caption {
         position: absolute;
         bottom: 0;
@@ -973,6 +933,7 @@
         text-align: center;
         letter-spacing: 0.02em;
       }
+      /* "Tap to go back" nudge when flipped */
       .card-back .back-hint {
         position: absolute;
         top: 12px;
@@ -1159,8 +1120,13 @@
       }
 
       /* =====================================================
-         PAGE 3 — WISH
-      ===================================================== */
+   PAGE 3 — MAKEUP / WISH
+   Critical rules:
+   • No overflow:hidden (content must scroll freely)
+   • position:absolute canvases inside their containers
+   • makeup-float: position:absolute (NOT fixed), % coords
+   • padding-top is tight — no extra space
+===================================================== */
       #page3 {
         background: linear-gradient(
           150deg,
@@ -1240,6 +1206,8 @@
           max-width: 420px;
         }
       }
+
+      /* Chapter cards — clickable */
       .story-block {
         background: rgba(255, 255, 255, 0.07);
         border: 1px solid rgba(255, 200, 220, 0.2);
@@ -1302,9 +1270,10 @@
       }
       .story-block h4 {
         font-family: var(--ff-d);
-        font-size: 1.2rem;
-        color: var(--blush);
-        margin-bottom: 0.5rem;
+        font-size: 1.05rem;
+        color: #ffd6e8;
+        margin: 0;
+        line-height: 1.3;
       }
       .story-block .story-preview {
         font-family: var(--ff-e);
@@ -1328,7 +1297,7 @@
         gap: 5px;
       }
 
-      /* Story modal */
+      /* ── Story modal ── */
       #story-modal {
         display: none;
         position: fixed;
@@ -1419,7 +1388,8 @@
         opacity: 1 !important;
       }
 
-      /* Scroll-reveal classes */
+      /* ---- Scroll-reveal classes for ALL page-3 elements ---- */
+      /* Base hidden state applied by JS before IntersectionObserver fires */
       .sr-hidden {
         opacity: 0;
         transform: translateY(52px) scale(0.96);
@@ -1434,6 +1404,7 @@
         transform: translateY(0) scale(1);
         filter: blur(0);
       }
+      /* Eyebrow line slides in from left */
       .sr-left {
         opacity: 0;
         transform: translateX(-40px);
@@ -1448,6 +1419,7 @@
         transform: translateX(0);
         filter: blur(0);
       }
+      /* Heading drops in from top */
       .sr-top {
         opacity: 0;
         transform: translateY(-36px) scale(0.97);
@@ -1462,6 +1434,7 @@
         transform: translateY(0) scale(1);
         filter: blur(0);
       }
+      /* Big wish text: scale + glow in */
       .sr-wish {
         opacity: 0;
         transform: scale(0.88);
@@ -1476,8 +1449,18 @@
         transform: scale(1);
         filter: blur(0) brightness(1);
       }
-
-      /* Big wish */
+      .story-block h4 {
+        font-family: var(--ff-d);
+        font-size: 1.2rem;
+        color: var(--blush);
+        margin-bottom: 0.5rem;
+      }
+      .story-block p {
+        font-family: var(--ff-e);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        opacity: 0.85;
+      }
       .big-wish {
         text-align: center;
         padding: 60px 20px;
@@ -1557,6 +1540,7 @@
         }
       }
 
+      /* ===== RESPONSIVE ===== */
       @media (max-width: 480px) {
         .gallery-grid {
           grid-template-columns: repeat(2, 1fr);
@@ -1574,7 +1558,7 @@
     </style>
   </head>
   <body>
-    <!-- Powder Burst Intro -->
+    <!-- ========== POWDER BURST INTRO OVERLAY ========== -->
     <div id="burst-overlay">
       <canvas id="burst-canvas"></canvas>
       <div id="burst-orb"></div>
@@ -1583,7 +1567,7 @@
     <!-- Fixed UI -->
     <div id="cursor"></div>
     <div id="cursor-trail"></div>
-    <button id="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+    <button id="theme-toggle" onclick="toggleTheme()">&#127769; Dark</button>
     <div id="page-dots">
       <div class="dot active" onclick="showPage(1)"></div>
       <div class="dot" onclick="showPage(2)"></div>
@@ -1595,13 +1579,11 @@
       <div class="wave-bar"></div>
       <div class="wave-bar"></div>
     </div>
-    <!-- Image loading status badge -->
-    <div id="collage-status">Loading memories…</div>
 
-    <!-- Gallery modal -->
+    <!-- Modal -->
     <div id="modal">
       <div class="modal-box">
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <button class="modal-close" onclick="closeModal()">&#10005;</button>
         <div id="modal-photo" class="modal-photo"></div>
         <p id="modal-caption" class="modal-caption"></p>
       </div>
@@ -1610,7 +1592,9 @@
     <!-- Story Chapter Modal -->
     <div id="story-modal">
       <div class="story-modal-box">
-        <button class="story-modal-close" onclick="closeStoryModal()">✕</button>
+        <button class="story-modal-close" onclick="closeStoryModal()">
+          &#10005;
+        </button>
         <div class="story-modal-header">
           <span class="s-emoji" id="sm-emoji"></span>
           <span class="s-chapter" id="sm-chapter"></span>
@@ -1622,57 +1606,57 @@
       </div>
     </div>
 
-    <!-- PAGE 1 — LANDING -->
+    <!-- ========== PAGE 1 — LANDING ========== -->
     <div id="page1" class="page active">
       <canvas id="particle-canvas"></canvas>
       <div class="landing-content">
-        <span class="crown-icon">👑</span>
+        <span class="crown-icon">&#128081;</span>
         <h1 class="landing-title" id="landing-title"></h1>
         <p class="landing-sub" id="landing-sub"></p>
         <button class="btn-enter" onclick="enterSite()">
-          ✨ Open Your Gift ✨
+          &#10024; Open Your Gift &#10024;
         </button>
       </div>
     </div>
 
-    <!-- PAGE 2 — GALLERY -->
+    <!-- ========== PAGE 2 — GALLERY ========== -->
     <div id="page2" class="page hidden">
       <div id="collage-bg"></div>
       <div id="collage-overlay"></div>
       <div class="page2-inner">
         <div class="page2-hero">
-          <h2>Our Beautiful Memories 📸</h2>
+          <h2>Our Beautiful Memories &#128248;</h2>
           <p>Every moment with you is a treasure</p>
         </div>
         <div class="gallery-grid" id="gallery-grid"></div>
         <div class="timeline-section">
-          <h3>Memory Lane 🌸</h3>
+          <h3>Memory Lane &#127800;</h3>
           <div id="timeline-container"></div>
         </div>
         <div class="confetti-wrap">
-          <p>Press the button for a little surprise 🎁</p>
+          <p>Press the button for a little surprise &#127881;</p>
           <button class="btn-confetti" onclick="launchConfetti()">
-            🎊 Surprise Me!
+            &#127882; Surprise Me!
           </button>
         </div>
         <div id="hidden-msg">
           "You are the kind of person who makes the whole room shine just by
-          being in it. ✥"
+          being in it. &#10025;"
         </div>
         <button class="btn-next" onclick="showPage(3)">
-          💄 See Your Birthday Wish →
+          &#128132; See Your Birthday Wish &#8594;
         </button>
       </div>
     </div>
 
-    <!-- PAGE 3 — WISH -->
+    <!-- ========== PAGE 3 — WISH ========== -->
     <div id="page3" class="page hidden">
       <canvas id="glitter-canvas"></canvas>
       <div class="page3-content">
         <div class="page3-hero">
-          <p class="eyebrow sr-left">My First And Last Gift For You ♥</p>
+          <p class="eyebrow sr-left">My First And Last Gift For You &#9829;</p>
           <h2 class="sr-top">
-            Story from my Perspective till now and Thanks for being part of it
+            Story form my Perspective till now and Thnaks for being part of it
           </h2>
         </div>
         <div class="story-section" id="story-section"></div>
@@ -1680,7 +1664,8 @@
           <canvas id="firework-canvas2"></canvas>
           <p class="wish-text sr-wish" id="wish-text"></p>
           <p class="wish-sub sr-hidden" style="transition-delay: 0.3s">
-            May time gift you moments as beautiful and rare as your soul. 🌙✨
+            May time gift you moments as beautiful and rare as your soul.
+            &#127769;&#10024;
           </p>
         </div>
         <button
@@ -1688,67 +1673,79 @@
           style="transition-delay: 0.5s"
           onclick="showPage(1)"
         >
-          ↩ Replay from Beginning
+          &#8617; Replay from Beginning
         </button>
       </div>
     </div>
 
     <script>
-      /* ═══════════════════════════════════════════════════════════════════
-       CONFIG
-    ═══════════════════════════════════════════════════════════════════ */
-      const BIRTHDAY_GIRL = "Chaitanya";
+      /* ===== CONFIG ===== */
+      const BIRTHDAY_GIRL = "Chaitanya"; // Change this name!
 
+      // Your images — place 1.jpg … 20.jpg inside an "images/" folder next to this HTML file
       const galleryData = [
-        { img: "images/1.jpeg", caption: "First day we met 🌷" },
+        { img: "images/1.jpeg", caption: "First day we met \uD83C\uDF37" },
         {
           img: "images/2.jpeg",
-          caption: "The birthday that started it all 🎈",
+          caption: "The birthday that started it all \uD83C\uDF88",
         },
-        { img: "images/3.jpeg", caption: "Beach day adventures 🏖️" },
-        { img: "images/4.jpeg", caption: "Late night talks ✨" },
-        { img: "images/5.jpeg", caption: "Garden adventures 🌻" },
-        { img: "images/6.jpeg", caption: "Our favourite café corner ☕" },
-        { img: "images/7.jpeg", caption: "When that song came on 🎵" },
-        { img: "images/8.jpeg", caption: "Rainbow after the storm 🌈" },
-        { img: "images/9.jpeg", caption: "One of a kind moment ❤️" },
-        { img: "images/10.jpeg", caption: "Memories we'll never forget 🌟" },
-        { img: "images/11.jpeg", caption: "Pure happiness 😍" },
-        { img: "images/12.jpeg", caption: "Together always 💖" },
+        {
+          img: "images/3.jpeg",
+          caption: "Beach day adventures \uD83C\uDFD6\uFE0F",
+        },
+        { img: "images/4.jpeg", caption: "Late night talks \u2728" },
+        { img: "images/5.jpeg", caption: "Garden adventures \uD83C\uDF3B" },
+        {
+          img: "images/6.jpeg",
+          caption: "Our favourite caf\u00E9 corner \u2615",
+        },
+        {
+          img: "images/7.jpeg",
+          caption: "When that song came on \uD83C\uDFB6",
+        },
+        {
+          img: "images/8.jpeg",
+          caption: "Rainbow after the storm \uD83C\uDF08",
+        },
+        { img: "images/9.jpeg", caption: "One of a kind moment \u2764\uFE0F" },
+        {
+          img: "images/10.jpeg",
+          caption: "Memories we'll never forget \uD83C\uDF1F",
+        },
+        { img: "images/11.jpeg", caption: "Pure happiness \uD83D\uDE0D" },
+        { img: "images/12.jpeg", caption: "Together always \uD83D\uDC96" },
       ];
-
       const timelineData = [
         {
-          emoji: "👶",
+          emoji: "\uD83D\uDC76",
           year: "Chapter 1",
           title: "The Beginning",
           text: "Before we even knew how important this friendship would become, the universe was already writing our story.",
         },
         {
-          emoji: "🎓",
+          emoji: "\uD83C\uDF93",
           year: "Chapter 2",
           title: "Growing Up Together",
-          text: "Through every exam, every heartbreak, every victory lap — we cheered each other on louder than anyone else.",
+          text: "Through every exam, every heartbreak, every victory lap \u2014 we cheered each other on louder than anyone else.",
         },
         {
-          emoji: "✈️",
+          emoji: "\u2708\uFE0F",
           year: "Chapter 3",
           title: "Adventures Everywhere",
           text: "We turned ordinary days into extraordinary ones. Every trip, every spontaneous plan, every 'no' we said together.",
         },
         {
-          emoji: "🌟",
+          emoji: "\uD83C\uDF1F",
           year: "Today",
           title: "Your Best Year Yet",
           text: "And now, on this beautiful day, all I want to say is: thank you for being exactly who you are. Many Happy returns to your day",
         },
       ];
-
       const storyData = [
         {
           emoji: "📖",
           chapter: "Chapter 1",
-          title: "A Story That Wasn't Supposed to Happen",
+          title: "A Story That Wasn’t Supposed to Happen",
           preview:
             "It all started in the 4th semester, when I joined an AI course…",
           text: `Ahh… it's a very, very long story.\n\nAnd honestly, I'm not that great at telling stories — but I'll try my best, because this one actually means something.\n\nIt all started in the 4th semester, when I joined an AI course. At that time, I was already close to one of my good friends, Neelay. We were comfortable, and I didn't really feel the need to meet new people.\n\nThen came the research paper.\n\nWe were asked to form a group of three or four, and honestly… we were completely out of options. Neelay and I weren't able to figure out a proper group, and things were just stuck.\n\nThat's when Dhruv suggested forming a group with Chaitanya.\n\nThere was also something we were already aware of — she had a crush on Neelay. Because of that, the situation already felt a bit sensitive, even before the group properly started.\n\nBut since we didn't really have many options left, we went ahead with it.\n\nAnd that's how everything began.`,
@@ -1758,7 +1755,7 @@
           chapter: "Chapter 2",
           title: "When Things Started Changing",
           preview: "The second chapter began during my internship.....",
-          text: `I was in Gurgaon at the time, busy with work and a completely different routine. Somewhere in between, one day, Dhruvi and I suddenly made a plan — we thought of visiting Chaitanya. It wasn't something deeply planned, just a spontaneous idea. But sometimes, things don't go the way you expect. Because of work commitments, we couldn't make it on time. And strangely, we didn't even properly talk to her about it. It was just me and Dhruvi discussing things, while she remained out of that conversation. And just like that… the plan never happened. After that, there was silence. No real conversations, no moments — just distance. Then came the 5th semester. After a long time, we finally met again — not in college, but while boarding a train. Different stations, same journey. It felt unexpected, but also familiar. That night, we had dinner together. Nothing extraordinary — just sitting, eating, and catching up on everything that had happened in between. But even that simple moment felt meaningful. And then… life moved on again. After that meeting, we didn't see each other for a while. The next time we met was directly in college, during classes. But this time, things were different. That's when I came to know that she had a boyfriend. And slowly, I started noticing changes. Her mood felt different. The way she talked was different. The time she gave… was different. And somewhere along the way, things changed for me too. Not suddenly. But gradually. We stopped talking as much. We stopped spending time together like before — not even the three of us. At that time, I didn't fully understand it. I felt the change, but I didn't accept it. Somewhere inside, I kept hoping things would go back to how they were. But now I realize — it was her decision, her space, and I should have respected it better. Instead, I sometimes reacted… even debated over small things. And I understood it late. Maybe because everything felt too sudden for me. My mind was full of noise — too many thoughts, too many questions. I couldn't process it properly. And deep down, there was fear. A fear that I might lose the one person I had genuinely started talking to after a long time… especially after everything I had been through in the past. She was the first person I had opened up to after that phase. And somewhere, I was scared she would go. That fear turned into overthinking. And that overthinking created more distance. But even then, one thing never changed. She always saw me in a positive way. She valued me, even when I wasn't at my best. And I've always had the same respect for her. There are some moments I will never forget. One of them was when she was alone in her hostel room… and her baba had passed away. At that time, most of the people she was close to were busy, and she didn't have anyone to talk to. I didn't know everything at first — I just messaged her, asking what happened. And then I called. That was the first time I heard her cry. And honestly… it broke me. Not just because of what she was going through, but because she told me something that stayed with me — that she had hesitated to call me because of my behavior during that phase. That hit me hard. It made me realize how even small changes in behavior can hurt someone deeply. From that day, I made sure — I would always be there when it mattered. Another moment that meant a lot to me was when I told her about my past. It wasn't easy. In fact, it was the first time I had ever opened up like that. But the way she listened… understood… and supported me without judging — I genuinely appreciated that. It felt safe. In many ways, she reminded me of my cousin sister — someone I could trust and be comfortable with. I used to tease her a lot, make fun of her, even annoy her sometimes. But that was my way of showing that I cared. That she mattered. I also cherish the time we spent together — whether it was during hackathons, random conversations, or just being around each other along with Dhruvi. Those moments may have seemed normal at the time… but they weren't. They were important. And till today, I'm grateful. Grateful for her presence, for her patience, and for the way she helped me grow — even without realizing it. This chapter didn't end with a big moment. It ended with understanding. That not everything stays the same… but some people still leave a permanent impact.`,
+          text: `I was in Gurgaon at the time, busy with work and a completely different routine. Somewhere in between, one day, Dhruvi and I suddenly made a plan — we thought of visiting Chaitanya. It wasn’t something deeply planned, just a spontaneous idea. But sometimes, things don’t go the way you expect. Because of work commitments, we couldn’t make it on time. And strangely, we didn’t even properly talk to her about it. It was just me and Dhruvi discussing things, while she remained out of that conversation. And just like that… the plan never happened. After that, there was silence. No real conversations, no moments — just distance. Then came the 5th semester. After a long time, we finally met again — not in college, but while boarding a train. Different stations, same journey. It felt unexpected, but also familiar. That night, we had dinner together. Nothing extraordinary — just sitting, eating, and catching up on everything that had happened in between. But even that simple moment felt meaningful. And then… life moved on again. After that meeting, we didn’t see each other for a while. The next time we met was directly in college, during classes. But this time, things were different. That’s when I came to know that she had a boyfriend. And slowly, I started noticing changes. Her mood felt different. The way she talked was different. The time she gave… was different. And somewhere along the way, things changed for me too. Not suddenly. But gradually. We stopped talking as much. We stopped spending time together like before — not even the three of us. At that time, I didn’t fully understand it. I felt the change, but I didn’t accept it. Somewhere inside, I kept hoping things would go back to how they were. But now I realize — it was her decision, her space, and I should have respected it better. Instead, I sometimes reacted… even debated over small things. And I understood it late. Maybe because everything felt too sudden for me. My mind was full of noise — too many thoughts, too many questions. I couldn’t process it properly. And deep down, there was fear. A fear that I might lose the one person I had genuinely started talking to after a long time… especially after everything I had been through in the past. She was the first person I had opened up to after that phase. And somewhere, I was scared she would go. That fear turned into overthinking. And that overthinking created more distance. But even then, one thing never changed. She always saw me in a positive way. She valued me, even when I wasn’t at my best. And I’ve always had the same respect for her. There are some moments I will never forget. One of them was when she was alone in her hostel room… and her baba had passed away. At that time, most of the people she was close to were busy, and she didn’t have anyone to talk to. I didn’t know everything at first — I just messaged her, asking what happened. And then I called. That was the first time I heard her cry. And honestly… it broke me. Not just because of what she was going through, but because she told me something that stayed with me — that she had hesitated to call me because of my behavior during that phase. That hit me hard. It made me realize how even small changes in behavior can hurt someone deeply. From that day, I made sure — I would always be there when it mattered. Another moment that meant a lot to me was when I told her about my past. It wasn’t easy. In fact, it was the first time I had ever opened up like that. But the way she listened… understood… and supported me without judging — I genuinely appreciated that. It felt safe. In many ways, she reminded me of my cousin sister — someone I could trust and be comfortable with. I used to tease her a lot, make fun of her, even annoy her sometimes. But that was my way of showing that I cared. That she mattered. I also cherish the time we spent together — whether it was during hackathons, random conversations, or just being around each other along with Dhruvi. Those moments may have seemed normal at the time… but they weren’t. They were important. And till today, I’m grateful. Grateful for her presence, for her patience, and for the way she helped me grow — even without realizing it. This chapter didn’t end with a big moment. It ended with understanding. That not everything stays the same… but some people still leave a permanent impact.`,
         },
         {
           emoji: "✨",
@@ -1766,7 +1763,7 @@
           title: "Tear Apart",
           preview:
             "Ahh… I never thought I would even be able to write the first and second chapters.....",
-          text: `It took a lot — thoughts, stress, and turning feelings into words. But here we are… the final chapter. And if I had to give this story a title, it would be "Tear Apart." Not because everything broke… but because everything changed. I've realized something — when someone finds their life partner, things naturally shift. Time, priorities, behavior — everything adjusts. And it's not wrong. It's just how life moves forward. And in our story, the same happened. We both changed. In different ways, at different times. There were misunderstandings, small conflicts, and moments where things didn't feel the same. But at the same time, there were also very fun moments — moments I'll always remember. One important thing I learned through all this is understanding boundaries. Sometimes, caring doesn't mean staying close all the time. Sometimes, it means giving space. I didn't want to meddle between them as a couple. And the reason I say this is because there were moments where I was seen as a bad person — those creepy, weird looks, the things that were happening around, and even the rumours… all of it made me realize that keeping a distance was the better choice. There are also some reasons I cannot express… but they pushed me to stay at a good distance — not just from her, but from others as well. So I chose distance — not out of anger, but out of understanding. But beyond all of this, one thing never changed. Gratitude. Thank you for being my friend. Thank you for changing my ideology — because of you, I was able to talk freely again, to trust again, and to see things differently. Thank you for making my days brighter. Thank you for always smiling. And thank you for trusting me. I've always respected you, and I always will. It's not like I won't be your friend. But I also understand that with time, things change. You might say it's not true… but somewhere, I feel it already happening. Maybe I'm just used to it — somehow, the people I get close to, I eventually have to let go. I don't know why… but I've learned to accept it. And that's okay. So wherever life takes us from here — just keep smiling, keep growing, and keep being the person you are. Because that's exactly how I'll always remember you.`,
+          text: `IIt took a lot — thoughts, stress, and turning feelings into words. But here we are… the final chapter. And if I had to give this story a title, it would be “Tear Apart.” Not because everything broke… but because everything changed. I’ve realized something — when someone finds their life partner, things naturally shift. Time, priorities, behavior — everything adjusts. And it’s not wrong. It’s just how life moves forward. And in our story, the same happened. We both changed. In different ways, at different times. There were misunderstandings, small conflicts, and moments where things didn’t feel the same. But at the same time, there were also very fun moments — moments I’ll always remember. One important thing I learned through all this is understanding boundaries. Sometimes, caring doesn’t mean staying close all the time. Sometimes, it means giving space. I didn’t want to meddle between them as a couple. And the reason I say this is because there were moments where I was seen as a bad person — those creepy, weird looks, the things that were happening around, and even the rumours… all of it made me realize that keeping a distance was the better choice. There are also some reasons I cannot express… but they pushed me to stay at a good distance — not just from her, but from others as well. So I chose distance — not out of anger, but out of understanding. But beyond all of this, one thing never changed. Gratitude. Thank you for being my friend. Thank you for changing my ideology — because of you, I was able to talk freely again, to trust again, and to see things differently. Thank you for making my days brighter. Thank you for always smiling. And thank you for trusting me. I’ve always respected you, and I always will. It’s not like I won’t be your friend. But I also understand that with time, things change. You might say it’s not true… but somewhere, I feel it already happening. Maybe I’m just used to it — somehow, the people I get close to, I eventually have to let go. I don’t know why… but I’ve learned to accept it. And that’s okay. So wherever life takes us from here — just keep smiling, keep growing, and keep being the person you are. Because that’s exactly how I’ll always remember you.`,
         },
       ];
 
@@ -1774,53 +1771,16 @@
         collageBuilt = false,
         darkMode = false;
 
-      /* ═══════════════════════════════════════════════════════════════════
-       OPTIMISED IMAGE CACHE & PRELOADER
-       ────────────────────────────────────────────────────────────────
-       _imgCache  — Map<src, HTMLImageElement> of decoded image objects.
-                    Every tile reuses the cached element so the browser
-                    never re-fetches or re-decodes the same bitmap.
-
-       preloadImages(urls) — returns a Promise that resolves once every
-                    url in the array has either loaded or errored.
-                    Uses Promise.all() so all requests run in parallel.
-    ═══════════════════════════════════════════════════════════════════ */
-      const _imgCache = new Map();
-
-      function preloadImages(urls) {
-        const promises = urls.map((src) => {
-          if (_imgCache.has(src)) return Promise.resolve(_imgCache.get(src));
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.decoding = "async"; // non-blocking decode
-            img.onload = () => {
-              _imgCache.set(src, img);
-              resolve(img);
-            };
-            img.onerror = () => {
-              _imgCache.set(src, img);
-              resolve(img);
-            }; // resolve not reject — don't block on 404
-            img.src = src;
-          });
-        });
-        return Promise.all(promises);
-      }
-
-      /* All 20 image URLs — adjust to your actual file count / names */
-      const ALL_IMGS = Array.from(
-        { length: 20 },
-        (_, i) => `images/${i + 1}.jpeg`,
-      );
-
-      /* ═══════════════════════════════════════════════════════════════════
-       PAGE SWITCHING
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== PAGE SWITCHING =====
+   Key: scroll reset BEFORE DOM swap prevents blank-space glitch.
+   display:none collapses page to 0px so no height is leaked. */
       function showPage(n) {
+        // 1. Reset scroll position first
         window.scrollTo({ top: 0, left: 0, behavior: "instant" });
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
 
+        // 2. Swap visibility
         document
           .querySelectorAll(".page")
           .forEach((p) => p.classList.replace("active", "hidden"));
@@ -1829,15 +1789,19 @@
           .classList.replace("hidden", "active");
         currentPage = n;
 
+        // 3. Force scroll reset after repaint (belt-and-suspenders)
         requestAnimationFrame(() => {
           window.scrollTo(0, 0);
           document.documentElement.scrollTop = 0;
         });
 
+        // 4. Update dots
         document
           .querySelectorAll(".dot")
           .forEach((d, i) => d.classList.toggle("active", i === n - 1));
 
+        // 5. Page-specific init
+        // Show/hide fixed collage only on page 2
         const collBg = document.getElementById("collage-bg");
         const collOv = document.getElementById("collage-overlay");
         if (n === 2) {
@@ -1850,11 +1814,11 @@
           } else {
             _rebuildQueue();
             _scheduleNext();
-          }
+          } // resume rotation if returning
         } else {
           collBg.classList.remove("active");
           collOv.classList.remove("active");
-          stopCollageRotation();
+          stopCollageRotation(); // pause rotation while off page 2
         }
         if (n === 3) {
           initGlitter();
@@ -1863,64 +1827,62 @@
         }
         playClickSound();
       }
-
       function enterSite() {
         startMusic();
         showPage(2);
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       COLLAGE — SKELETON → PRELOAD → ANIMATE
-       ────────────────────────────────────────────────────────────────
-       Flow:
-         1. Instantly show a 12-tile skeleton grid (gradient shimmer)
-            so the page never looks empty.
-         2. Kick off Promise.all() preload for all 20 images in parallel.
-         3. Update the status badge with progress (loaded N / 20).
-         4. When ALL images resolve, hide skeleton, run the cinematic
-            fly-in, then start the rotation loop.
-    ═══════════════════════════════════════════════════════════════════ */
-      let _collagePool = []; // src currently displayed per tile index
-      let _collageInterval = null;
-      let _tileEls = [];
-      let _rotateQueue = [];
+      const ALL_IMGS = Array.from(
+        { length: 20 },
+        (_, i) => `images/${i + 1}.jpeg`,
+      );
+      let _preloaded = false;
+      let _collagePool = []; // currently displayed src per tile index
+      let _collageInterval = null; // auto-rotate timer
+      let _tileEls = []; // live tile DOM nodes
 
-      /* Show loading status badge */
-      function showStatus(msg) {
-        const el = document.getElementById("collage-status");
-        el.textContent = msg;
-        el.classList.add("visible");
-      }
-      function hideStatus() {
-        const el = document.getElementById("collage-status");
-        el.classList.remove("visible");
+      /* --- Preload all images silently --- */
+      function preloadAllImages(cb) {
+        if (_preloaded) {
+          cb();
+          return;
+        }
+        let done = 0;
+        ALL_IMGS.forEach((src) => {
+          const img = new Image();
+          img.onload = img.onerror = () => {
+            if (++done === ALL_IMGS.length) {
+              _preloaded = true;
+              cb();
+            }
+          };
+          img.src = src;
+        });
       }
 
-      /* Build one tile's inner HTML using the cached Image object */
+      /* --- Build one tile's inner HTML (blurred bg + contained image) --- */
       function makeTileContent(src) {
-        const frag = document.createDocumentFragment();
-
+        // blurBg div uses background-image so it fills/covers the cell
+        const wrap = document.createDocumentFragment();
         const bg = document.createElement("div");
         bg.className = "tile-blur-bg";
         bg.style.backgroundImage = `url('${src}')`;
 
         const img = document.createElement("img");
         img.className = "tile-img";
-        img.loading = "eager"; // don't lazy-load collage tiles
-        img.decoding = "sync"; // already decoded — use synchronously
-        img.alt = "memory";
-        // If already in cache, reuse the src directly — browser hits memory cache
         img.src = src;
+        img.alt = "memory";
         img.onerror = function () {
           bg.style.backgroundImage = "linear-gradient(135deg,#f9a8d4,#c084fc)";
           this.style.display = "none";
         };
 
-        frag.appendChild(bg);
-        frag.appendChild(img);
-        return frag;
+        wrap.appendChild(bg);
+        wrap.appendChild(img);
+        return wrap;
       }
 
+      /* --- Helper: random signed value between ±lo and ±hi px --- */
       function rng(lo, hi) {
         return (
           (
@@ -1930,133 +1892,78 @@
         );
       }
 
-      function assignFloatVars(tile) {
-        tile.style.setProperty(
-          "--float-dur",
-          (6 + Math.random() * 5).toFixed(1) + "s",
-        );
-        tile.style.setProperty(
-          "--float-dur2",
-          (8 + Math.random() * 6).toFixed(1) + "s",
-        );
-        tile.style.setProperty(
-          "--float-dur3",
-          (10 + Math.random() * 7).toFixed(1) + "s",
-        );
-        tile.style.setProperty(
-          "--float-delay",
-          (Math.random() * 4).toFixed(1) + "s",
-        );
-        tile.style.setProperty(
-          "--float-delay2",
-          (Math.random() * 5).toFixed(1) + "s",
-        );
-        tile.style.setProperty(
-          "--float-delay3",
-          (Math.random() * 6).toFixed(1) + "s",
-        );
-        tile.style.setProperty("--fy", rng(4, 9));
-        tile.style.setProperty("--fy2", rng(2, 6));
-        tile.style.setProperty("--fx", rng(3, 7));
-        tile.style.setProperty("--fx2", rng(2, 5));
-      }
-
+      /* --- Initial cinematic build (first visit to page 2) --- */
       function buildCinematicCollage() {
         const container = document.getElementById("collage-bg");
         container.innerHTML = "";
         _tileEls = [];
 
-        /* Step 1 — Show 12 skeleton tiles immediately */
-        showStatus("Loading memories…");
-        for (let i = 0; i < 12; i++) {
-          const tile = document.createElement("div");
-          tile.className = "collage-tile skeleton assembling"; // visible, shimmer
-          tile.style.opacity = "1";
-          tile.style.transform = "scale(1) translateY(0)";
-          tile.style.filter = "blur(0)";
-          tile.style.transition = "none";
-          container.appendChild(tile);
-          _tileEls.push(tile);
-        }
+        const shuffled = [...ALL_IMGS].sort(() => Math.random() - 0.5);
+        _collagePool = shuffled.slice(0, 12);
 
-        /* Step 2 — Preload all images with progress tracking */
-        let loaded = 0;
-        const trackedLoad = ALL_IMGS.map((src) => {
-          if (_imgCache.has(src)) {
-            loaded++;
-            return Promise.resolve(_imgCache.get(src));
-          }
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.decoding = "async";
-            img.onload = img.onerror = () => {
-              _imgCache.set(src, img);
-              loaded++;
-              // Update badge every 4 images to avoid excessive DOM writes
-              if (loaded % 4 === 0 || loaded === ALL_IMGS.length) {
-                showStatus(`Loading memories… ${loaded}/${ALL_IMGS.length}`);
-              }
-              resolve(img);
-            };
-            img.src = src;
-          });
-        });
+        preloadAllImages(() => {
+          _collagePool.forEach((src, idx) => {
+            const tile = document.createElement("div");
+            tile.className = "collage-tile";
 
-        /* Step 3 — Once all loaded, swap skeletons for real images */
-        Promise.all(trackedLoad).then(() => {
-          hideStatus();
+            // Rich, unique float params per tile so nothing moves in sync
+            tile.style.setProperty(
+              "--float-dur",
+              (6 + Math.random() * 5).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-dur2",
+              (8 + Math.random() * 6).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-dur3",
+              (10 + Math.random() * 7).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-delay",
+              (Math.random() * 4).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-delay2",
+              (Math.random() * 5).toFixed(1) + "s",
+            );
+            tile.style.setProperty(
+              "--float-delay3",
+              (Math.random() * 6).toFixed(1) + "s",
+            );
+            tile.style.setProperty("--fy", rng(4, 9));
+            tile.style.setProperty("--fy2", rng(2, 6));
+            tile.style.setProperty("--fx", rng(3, 7));
+            tile.style.setProperty("--fx2", rng(2, 5));
 
-          const shuffled = [...ALL_IMGS].sort(() => Math.random() - 0.5);
-          _collagePool = shuffled.slice(0, 12);
+            tile.appendChild(makeTileContent(src));
+            container.appendChild(tile);
+            _tileEls.push(tile);
 
-          /* Replace skeleton tiles with real content — staggered */
-          _tileEls.forEach((tile, idx) => {
-            const src = _collagePool[idx];
+            const assembleAt = 250 + idx * 130;
+            const shimmerAt = assembleAt + 1200;
+            const floatAt = assembleAt + 1600;
 
-            setTimeout(() => {
-              /* Reset tile to pre-animation state */
-              tile.classList.remove("skeleton", "assembling");
-              tile.style.opacity = "";
-              tile.style.transform = "";
-              tile.style.filter = "";
-              tile.style.transition = "";
-
-              assignFloatVars(tile);
-              tile.appendChild(makeTileContent(src));
-
-              /* Fly-in */
-              const flyAt = 50;
-              const shimmerAt = flyAt + 1200;
-              const floatAt = flyAt + 1600;
-
-              setTimeout(() => tile.classList.add("assembling"), flyAt);
-              setTimeout(() => tile.classList.add("shimmer"), shimmerAt);
-              setTimeout(() => tile.classList.add("floating"), floatAt);
-            }, idx * 110);
+            setTimeout(() => tile.classList.add("assembling"), assembleAt);
+            setTimeout(() => tile.classList.add("shimmer"), shimmerAt);
+            setTimeout(() => tile.classList.add("floating"), floatAt);
           });
 
-          /* Start rotation after all tiles finish their fly-in */
-          const totalFlyIn = 12 * 110 + 1800;
-          setTimeout(startCollageRotation, totalFlyIn);
+          // Start rotating after initial reveal completes
+          const totalAssembly = 250 + 11 * 130 + 1800;
+          setTimeout(startCollageRotation, totalAssembly);
         });
-
-        /* Begin background preload immediately (non-blocking) */
-        /* The skeleton is already visible so there is no blank flash */
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       ROTATION — pre-fetch replacement before swapping
-       ────────────────────────────────────────────────────────────────
-       Each rotation cycle:
-         1. Pick next tile from the shuffled queue.
-         2. Pre-fetch the replacement image (likely already cached).
-         3. Only when the image is ready, run the fade-out / swap / fade-in.
-         This eliminates the blank-flash that occurs when the new src
-         hasn't downloaded yet at the moment the tile swaps.
-    ═══════════════════════════════════════════════════════════════════ */
+      /* --- Auto-rotate: swap ONE tile every 2.5–4s (staggered, never jarring) ---
+   By swapping only 1 tile at a time on a short interval the collage feels
+   continuously alive without any two tiles changing simultaneously.         */
+      let _rotateQueue = []; // shuffled tile indices waiting their turn
+
       function startCollageRotation() {
-        if (_collageInterval) clearTimeout(_collageInterval);
+        if (_collageInterval) clearInterval(_collageInterval);
         _rebuildQueue();
+        // Pick a new tile every 2.5–3.5s — random jitter keeps it organic
         _scheduleNext();
       }
 
@@ -2067,7 +1974,7 @@
       }
 
       function _scheduleNext() {
-        const delay = 2500 + Math.random() * 1000;
+        const delay = 2500 + Math.random() * 1000; // 2.5–3.5s
         _collageInterval = setTimeout(() => {
           rotateSomeTiles();
           _scheduleNext();
@@ -2083,56 +1990,82 @@
 
       function rotateSomeTiles() {
         if (!_tileEls.length) return;
-        if (!_rotateQueue.length) _rebuildQueue();
 
+        // Pop next tile from queue; refill when exhausted
+        if (!_rotateQueue.length) _rebuildQueue();
         const tileIdx = _rotateQueue.pop();
         const tile = _tileEls[tileIdx];
         if (!tile) return;
 
+        // Pick a replacement not currently shown
         const remaining = ALL_IMGS.filter((s) => !_collagePool.includes(s));
         const pool = remaining.length ? remaining : [...ALL_IMGS];
         const newSrc = pool[Math.floor(Math.random() * pool.length)];
 
-        /* Pre-fetch the replacement image BEFORE fading anything out.
-         If already cached this resolves instantly (<1ms). */
-        preloadImages([newSrc]).then(() => {
-          /* Now it's safe to start the visual swap */
-          tile.classList.add("tile-leaving");
+        // Phase A: fade out (0.55s)
+        tile.classList.add("tile-leaving");
 
-          setTimeout(() => {
-            tile.classList.remove(
-              "assembling",
-              "floating",
-              "shimmer",
-              "tile-leaving",
-              "skeleton",
-            );
-            tile.classList.add("tile-entering");
-            tile.innerHTML = "";
-            tile.appendChild(makeTileContent(newSrc));
-            _collagePool[tileIdx] = newSrc;
-            assignFloatVars(tile);
+        setTimeout(() => {
+          // Phase B: swap while invisible
+          tile.classList.remove(
+            "assembling",
+            "floating",
+            "shimmer",
+            "tile-leaving",
+          );
+          tile.classList.add("tile-entering");
+          tile.innerHTML = "";
+          tile.appendChild(makeTileContent(newSrc));
+          _collagePool[tileIdx] = newSrc;
 
+          // Reassign fresh float params so each return feels different
+          tile.style.setProperty(
+            "--float-dur",
+            (6 + Math.random() * 5).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-dur2",
+            (8 + Math.random() * 6).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-dur3",
+            (10 + Math.random() * 7).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-delay",
+            (Math.random() * 3).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-delay2",
+            (Math.random() * 4).toFixed(1) + "s",
+          );
+          tile.style.setProperty(
+            "--float-delay3",
+            (Math.random() * 5).toFixed(1) + "s",
+          );
+          tile.style.setProperty("--fy", rng(4, 9));
+          tile.style.setProperty("--fy2", rng(2, 6));
+          tile.style.setProperty("--fx", rng(3, 7));
+          tile.style.setProperty("--fx2", rng(2, 5));
+
+          // Phase C: fade in (0.7s)
+          requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                tile.classList.add("tile-in");
+              tile.classList.add("tile-in");
+              setTimeout(() => {
+                tile.classList.remove("tile-entering", "tile-in");
+                tile.classList.add("assembling");
                 setTimeout(() => {
-                  tile.classList.remove("tile-entering", "tile-in");
-                  tile.classList.add("assembling");
-                  setTimeout(() => {
-                    tile.classList.add("shimmer");
-                    tile.classList.add("floating");
-                  }, 900);
-                }, 750);
-              });
+                  tile.classList.add("shimmer");
+                  tile.classList.add("floating");
+                }, 900);
+              }, 750);
             });
-          }, 580);
-        });
+          });
+        }, 580); // slightly longer than fade-out (0.55s) to ensure it's gone
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       TYPING EFFECT
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== TYPING EFFECT ===== */
       function typeText(el, text, speed, cb) {
         speed = speed || 60;
         let i = 0;
@@ -2150,57 +2083,77 @@
         }, speed);
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       POWDER BURST INTRO
-    ═══════════════════════════════════════════════════════════════════ */
+      /* =====================================================
+   POWDER BURST INTRO — volumetric cloud explosion
+   Visual target: dense coloured powder burst on white,
+   like Holi powder — multiple colour zones, tendrils,
+   turbulence, then reveals the site behind.
+
+   Timeline:
+     0ms    — white screen, small orb fades in
+     700ms  — orb compresses (charge)
+     880ms  — BURST fires, audio whoosh
+     880ms–3000ms — cloud expands, fills screen
+     2800ms — overlay dissolves
+     3800ms — overlay removed
+===================================================== */
       (function () {
+        /* ── Colour palette: pink/rose/magenta (matching site theme) ── */
         const ZONES = [
           {
             cols: ["#ff6eb4", "#ff3d9a", "#ff85c0", "#ffadd6", "#ffffff"],
             weight: 0.3,
-          },
+          }, // hot pink core
           {
             cols: ["#c76bdd", "#a44ec9", "#d48ded", "#e8c5f7", "#ffffff"],
             weight: 0.25,
-          },
+          }, // purple
           {
             cols: ["#ff9ed2", "#ffcce8", "#ffd6f0", "#fff0f8", "#ffffff"],
             weight: 0.25,
-          },
+          }, // blush/pastel
           {
             cols: ["#f9c5d1", "#ffd6e8", "#ffe8f2", "#ffffff", "#ffb8d4"],
             weight: 0.2,
-          },
+          }, // soft white/pink
         ];
+
         let canvas,
           ctx,
           W,
           H,
           animId = null;
         let burstFired = false;
+        // Three particle layers for depth
         let coreP = [],
           cloudP = [],
           dustP = [];
 
+        /* ── Pick colour from weighted zones ── */
         function pickCol() {
-          const r = Math.random();
-          const zone =
-            ZONES.find(
-              (_, i, a) =>
-                r < a.slice(0, i + 1).reduce((s, z) => s + z.weight, 0),
-            ) || ZONES[0];
+          const r = Math.random(),
+            zone =
+              ZONES.find(
+                (_, i, a) =>
+                  r < a.slice(0, i + 1).reduce((s, z) => s + z.weight, 0),
+              ) || ZONES[0];
           return zone.cols[Math.floor(Math.random() * zone.cols.length)];
         }
+
+        /* ── Convert hex → rgba string ── */
         function rgba(hex, a) {
           const r = parseInt(hex.slice(1, 3), 16),
             g = parseInt(hex.slice(3, 5), 16),
             b = parseInt(hex.slice(5, 7), 16);
           return `rgba(${r},${g},${b},${a.toFixed(3)})`;
         }
+
+        /* ── Core streak particles — fast, elongated, directional ── */
         function makeStreak(cx, cy) {
-          const angle = Math.random() * Math.PI * 2,
-            spd = 8 + Math.random() * 18,
-            col = pickCol();
+          const angle = Math.random() * Math.PI * 2;
+          // Bias: more horizontal spread, slight upward lift like real powder
+          const spd = 8 + Math.random() * 18;
+          const col = pickCol();
           return {
             x: cx,
             y: cy,
@@ -2208,7 +2161,7 @@
             vy:
               Math.sin(angle) * spd * (0.5 + Math.random() * 0.5) -
               Math.random() * 4,
-            len: 18 + Math.random() * 55,
+            len: 18 + Math.random() * 55, // streak length
             width: 3 + Math.random() * 9,
             col,
             alpha: 0.7 + Math.random() * 0.3,
@@ -2219,13 +2172,15 @@
             turbY: (Math.random() - 0.5) * 0.2,
           };
         }
+
+        /* ── Cloud puff particles — large soft blobs that form the billowing mass ── */
         function makePuff(cx, cy, wave) {
-          const angle = Math.random() * Math.PI * 2,
-            spd =
-              (2 + Math.random() * 7) *
-              (wave === 0 ? 1.4 : wave === 1 ? 1.0 : 0.6);
-          const size = 28 + Math.random() * 90,
-            col = pickCol();
+          const angle = Math.random() * Math.PI * 2;
+          const spd =
+            (2 + Math.random() * 7) *
+            (wave === 0 ? 1.4 : wave === 1 ? 1.0 : 0.6);
+          const size = 28 + Math.random() * 90;
+          const col = pickCol();
           return {
             x: cx + (Math.random() - 0.5) * 40 * (wave + 1),
             y: cy + (Math.random() - 0.5) * 30 * (wave + 1),
@@ -2238,14 +2193,16 @@
             decay: 0.004 + Math.random() * 0.004,
             drag: 0.97 + Math.random() * 0.018,
             grav: 0.015 + Math.random() * 0.02,
-            grow: 0.8 + Math.random() * 1.2,
+            grow: 0.8 + Math.random() * 1.2, // px/frame the puff expands
             turbX: (Math.random() - 0.5) * 0.25,
             turbY: (Math.random() - 0.5) * 0.15,
           };
         }
+
+        /* ── Fine dust — tiny particles, slow drift, long life ── */
         function makeDust(cx, cy) {
-          const angle = Math.random() * Math.PI * 2,
-            spd = 0.4 + Math.random() * 2.5;
+          const angle = Math.random() * Math.PI * 2;
+          const spd = 0.4 + Math.random() * 2.5;
           return {
             x: cx + (Math.random() - 0.5) * W * 0.6,
             y: cy + (Math.random() - 0.5) * H * 0.6,
@@ -2259,24 +2216,34 @@
             grav: 0.008,
           };
         }
+
+        /* ── FIRE THE BURST ── */
         function fireBurst(cx, cy) {
+          // Instant core streaks — 200 fast directional tendrils
           for (let i = 0; i < 200; i++) coreP.push(makeStreak(cx, cy));
+
+          // Cloud puffs in 4 expanding waves
           for (let w = 0; w < 4; w++) {
             const count = w === 0 ? 80 : w === 1 ? 100 : w === 2 ? 80 : 60;
             setTimeout(() => {
               for (let i = 0; i < count; i++) cloudP.push(makePuff(cx, cy, w));
             }, w * 90);
           }
+
+          // Fine dust settles last
           setTimeout(() => {
             for (let i = 0; i < 120; i++) dustP.push(makeDust(cx, cy));
           }, 250);
         }
+
+        /* ── Draw a streak (elongated capsule in direction of motion) ── */
         function drawStreak(p) {
           const spd = Math.hypot(p.vx, p.vy);
           if (spd < 0.1) return;
           const nx = p.vx / spd,
-            ny = p.vy / spd,
-            len = Math.min(p.len, spd * 4);
+            ny = p.vy / spd;
+          const len = Math.min(p.len, spd * 4);
+
           ctx.save();
           ctx.globalAlpha = Math.max(0, p.alpha);
           const grad = ctx.createLinearGradient(
@@ -2297,9 +2264,12 @@
           ctx.stroke();
           ctx.restore();
         }
+
+        /* ── Draw a cloud puff (radial gradient soft blob) ── */
         function drawPuff(p) {
           ctx.save();
           ctx.globalAlpha = Math.max(0, p.alpha);
+          // No ctx.filter — use radial gradient for softness (much faster)
           const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
           grad.addColorStop(0, rgba(p.col, 0.72));
           grad.addColorStop(0.35, rgba(p.col, 0.5));
@@ -2311,6 +2281,8 @@
           ctx.fill();
           ctx.restore();
         }
+
+        /* ── Draw dust dot ── */
         function drawDust(p) {
           ctx.save();
           ctx.globalAlpha = Math.max(0, p.alpha);
@@ -2323,9 +2295,14 @@
           ctx.fill();
           ctx.restore();
         }
+
+        /* ── Main draw loop ── */
         function draw() {
+          // Fill white each frame — powder on white background
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(0, 0, W, H);
+
+          // 1. Cloud puffs first (back layer, large)
           for (let i = cloudP.length - 1; i >= 0; i--) {
             const p = cloudP[i];
             p.x += p.vx + p.turbX;
@@ -2341,6 +2318,8 @@
             }
             drawPuff(p);
           }
+
+          // 2. Core streaks on top (give speed/energy impression)
           for (let i = coreP.length - 1; i >= 0; i--) {
             const p = coreP[i];
             p.x += p.vx;
@@ -2355,6 +2334,8 @@
             }
             drawStreak(p);
           }
+
+          // 3. Fine dust on top
           for (let i = dustP.length - 1; i >= 0; i--) {
             const p = dustP[i];
             p.x += p.vx;
@@ -2369,15 +2350,19 @@
             }
             drawDust(p);
           }
-          if (coreP.length || cloudP.length || dustP.length || !burstFired)
+
+          if (coreP.length || cloudP.length || dustP.length || !burstFired) {
             animId = requestAnimationFrame(draw);
+          }
         }
+
+        /* ── Whoosh sound ── */
         function playWhoosh() {
           try {
             const ac = new (window.AudioContext || window.webkitAudioContext)();
-            const bufSize = Math.floor(ac.sampleRate * 1.0),
-              buf = ac.createBuffer(1, bufSize, ac.sampleRate),
-              d = buf.getChannelData(0);
+            const bufSize = Math.floor(ac.sampleRate * 1.0);
+            const buf = ac.createBuffer(1, bufSize, ac.sampleRate);
+            const d = buf.getChannelData(0);
             let b0 = 0,
               b1 = 0,
               b2 = 0,
@@ -2396,9 +2381,10 @@
               d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.13;
               b6 = w * 0.115926;
             }
-            const src = ac.createBufferSource(),
-              gain = ac.createGain(),
-              flt = ac.createBiquadFilter();
+            const src = ac.createBufferSource();
+            src.buffer = buf;
+            const gain = ac.createGain();
+            const flt = ac.createBiquadFilter();
             flt.type = "lowpass";
             flt.frequency.value = 2200;
             src.connect(flt);
@@ -2407,31 +2393,41 @@
             gain.gain.setValueAtTime(0, ac.currentTime);
             gain.gain.linearRampToValueAtTime(0.45, ac.currentTime + 0.08);
             gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.9);
-            src.buffer = buf;
             src.start();
             src.stop(ac.currentTime + 1.0);
           } catch (e) {}
         }
+
+        /* ── Orchestrator ── */
         window.runBurstIntro = function () {
-          const overlay = document.getElementById("burst-overlay"),
-            orb = document.getElementById("burst-orb");
+          const overlay = document.getElementById("burst-overlay");
+          const orb = document.getElementById("burst-orb");
           canvas = document.getElementById("burst-canvas");
           ctx = canvas.getContext("2d");
+
           function resize() {
             W = canvas.width = innerWidth;
             H = canvas.height = innerHeight;
           }
           resize();
           window.addEventListener("resize", resize);
+          // start drawing white bg immediately
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(0, 0, W, H);
+
           const cx = W / 2,
             cy = H / 2;
+
+          // Step 1 — orb appears
           setTimeout(() => orb.classList.add("orb-appear"), 80);
+
+          // Step 2 — compress
           setTimeout(() => {
             orb.classList.remove("orb-appear");
             orb.classList.add("orb-compress");
           }, 750);
+
+          // Step 3 — BURST
           setTimeout(() => {
             orb.classList.add("orb-gone");
             burstFired = true;
@@ -2439,7 +2435,11 @@
             fireBurst(cx, cy);
             draw();
           }, 900);
+
+          // Step 4 — dissolve overlay (canvas still drawing underneath fades out)
           setTimeout(() => overlay.classList.add("dissolving"), 2800);
+
+          // Step 5 — remove
           setTimeout(() => {
             overlay.remove();
             cancelAnimationFrame(animId);
@@ -2447,13 +2447,13 @@
         };
       })();
 
-      /* ═══════════════════════════════════════════════════════════════════
-       DOM READY
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== DOM READY ===== */
       window.addEventListener("DOMContentLoaded", () => {
+        // Restore saved theme (silent — no click sound on load)
         if (localStorage.getItem("bdayTheme") === "dark")
           applyTheme(true, false);
 
+        // ── Meaningful sentences paired to each photo ──
         const memorySentences = [
           "The moment I realised some people just fit.",
           "Every story worth telling starts exactly like this.",
@@ -2483,42 +2483,62 @@
           "💞",
         ];
 
-        /* Build flip cards */
+        // ── Build flip cards ──
         const grid = document.getElementById("gallery-grid");
         galleryData.forEach((item, i) => {
           const sentence = memorySentences[i % memorySentences.length];
           const accent = accentEmojis[i % accentEmojis.length];
+
           const card = document.createElement("div");
           card.className = "gallery-card";
+          // staggered entrance animation delay
           card.style.setProperty("--card-delay", `${i * 80}ms`);
+
           card.innerHTML = `
-          <div class="card-glow"></div>
-          <div class="card-inner">
-            <div class="card-front">
-              <span class="card-number">✦ ${String(i + 1).padStart(2, "0")}</span>
-              <span class="card-accent">${accent}</span>
-              <p class="card-sentence">${sentence}</p>
-              <span class="card-hint">tap to reveal ↩</span>
-            </div>
-            <div class="card-back">
-              <img src="${item.img}" alt="${item.caption}" loading="lazy"
-                   onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#f9a8d4,#c084fc)'" />
-              <div class="photo-caption">${item.caption}</div>
-              <span class="back-hint">tap to flip back</span>
-            </div>
-          </div>`;
+            <div class="card-glow"></div>
+            <div class="card-inner">
+
+              <!-- FRONT: sentence -->
+              <div class="card-front">
+                <span class="card-number">✦ ${String(i + 1).padStart(2, "0")}</span>
+                <span class="card-accent">${accent}</span>
+                <p class="card-sentence">${sentence}</p>
+                <span class="card-hint">tap to reveal ↩</span>
+              </div>
+
+              <!-- BACK: real photo -->
+              <div class="card-back">
+                <img
+                  src="${item.img}"
+                  alt="${item.caption}"
+                  loading="lazy"
+                  onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#f9a8d4,#c084fc)'"
+                />
+                <div class="photo-caption">${item.caption}</div>
+                <span class="back-hint">tap to flip back</span>
+              </div>
+
+            </div>`;
+
+          // Set blurred bg hint on front face from same image
           const front = card.querySelector(".card-front");
           front.style.backgroundImage = `url('${item.img}')`;
+
+          // Click / tap toggles flip
           card.addEventListener("click", () => {
             card.classList.toggle("flipped");
             playClickSound();
           });
+
+          // Staggered reveal on scroll using IntersectionObserver
           card.style.opacity = "0";
           card.style.transform = "translateY(30px)";
           card.style.transition = `opacity 0.7s ease var(--card-delay), transform 0.7s ease var(--card-delay)`;
+
           grid.appendChild(card);
         });
 
+        // Trigger entrance animation when cards enter viewport
         const cardObs = new IntersectionObserver(
           (entries) => {
             entries.forEach((e) => {
@@ -2535,26 +2555,26 @@
           .querySelectorAll(".gallery-card")
           .forEach((c) => cardObs.observe(c));
 
-        /* Build timeline */
+        // Build timeline
         const tc = document.getElementById("timeline-container");
         timelineData.forEach((item) => {
           const el = document.createElement("div");
           el.className = "timeline-item";
-          el.innerHTML = `<div class="timeline-dot">${item.emoji}</div><div class="timeline-text"><h4>${item.year} — ${item.title}</h4><p>${item.text}</p></div>`;
+          el.innerHTML = `<div class="timeline-dot">${item.emoji}</div><div class="timeline-text"><h4>${item.year} \u2014 ${item.title}</h4><p>${item.text}</p></div>`;
           tc.appendChild(el);
         });
 
-        /* Build story cards */
+        // Build chapter cards (3 clickable story blocks)
         const ss = document.getElementById("story-section");
-        storyData.forEach((item) => {
+        storyData.forEach((item, i) => {
           const el = document.createElement("div");
           el.className = "story-block";
           el.innerHTML = `
-          <span class="story-emoji">${item.emoji}</span>
-          <span class="story-chapter">${item.chapter}</span>
-          <h4>${item.title}</h4>
-          <p class="story-preview">${item.preview}</p>
-          <span class="read-more">Read story →</span>`;
+      <span class="story-emoji">${item.emoji}</span>
+      <span class="story-chapter">${item.chapter}</span>
+      <h4>${item.title}</h4>
+      <p class="story-preview">${item.preview}</p>
+      <span class="read-more">Read story &#8594;</span>`;
           el.onclick = () => openStoryModal(item);
           ss.appendChild(el);
         });
@@ -2563,16 +2583,14 @@
         spawnMakeupIcons();
         initParticles();
         document.getElementById("wish-text").textContent =
-          `Happy Birthday ${BIRTHDAY_GIRL} 🎂💖`;
+          `Happy Birthday ${BIRTHDAY_GIRL} \uD83C\uDF82\uD83D\uDC96`;
 
-        /* Kick off all-image background preload while user is on page 1 */
-        preloadImages(ALL_IMGS);
-
+        // 🌸 Run powder burst first — typing starts as overlay dissolves
         runBurstIntro();
         setTimeout(() => {
           typeText(
             document.getElementById("landing-title"),
-            `Hey ${BIRTHDAY_GIRL} 💖`,
+            `Hey ${BIRTHDAY_GIRL} \uD83D\uDC96`,
             80,
             () => {
               typeText(
@@ -2585,15 +2603,20 @@
         }, 2900);
       });
 
-      /* ═══════════════════════════════════════════════════════════════════
-       PAGE 3 SCROLL REVEAL
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== PAGE 3 SCROLL REVEAL =====
+   IntersectionObserver watches every .sr-hidden and .story-block element.
+   When an element enters the viewport it gains the visible class.
+   A small cascade delay per element gives a wave-like feel.
+   Called fresh each time page 3 is shown so re-entrances work. */
       function staggerRevealStories() {
+        // Reset all animated elements to hidden
         document
           .querySelectorAll(".story-block,.sr-hidden,.sr-left,.sr-top,.sr-wish")
           .forEach((el) => {
             el.classList.remove("visible", "sr-visible");
           });
+
+        // Observe story blocks (scroll reveal)
         const storyObs = new IntersectionObserver(
           (entries, obs) => {
             entries.forEach((e) => {
@@ -2611,6 +2634,7 @@
           .querySelectorAll(".story-block")
           .forEach((b) => storyObs.observe(b));
 
+        // Observe sr-* elements (hero, wish, button)
         const srObs = new IntersectionObserver(
           (entries, obs) => {
             entries.forEach((e) => {
@@ -2626,9 +2650,7 @@
           .forEach((el) => srObs.observe(el));
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       PARTICLES (page 1)
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== PARTICLES (page 1) ===== */
       function initParticles() {
         const canvas = document.getElementById("particle-canvas"),
           ctx = canvas.getContext("2d");
@@ -2641,8 +2663,17 @@
         }
         resize();
         window.addEventListener("resize", resize);
-        const SYM = ["✶", "✷", "⋆", "✺", "✻", "✿", "◌", "·"],
-          COL = ["#f4a0b5", "#c9b8e8", "#ffd6b0", "#f9c5d1", "#d8bdf9"];
+        const SYM = [
+          "\u2736",
+          "\u2737",
+          "\u22C6",
+          "\u273A",
+          "\u274B",
+          "\u273F",
+          "\u25CC",
+          "\u00B7",
+        ];
+        const COL = ["#f4a0b5", "#c9b8e8", "#ffd6b0", "#f9c5d1", "#d8bdf9"];
         function mk() {
           return {
             x: Math.random() * innerWidth,
@@ -2675,12 +2706,19 @@
         })();
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       FLOATING HEARTS (page 1)
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== FLOATING HEARTS (page 1) ===== */
       function spawnHearts() {
         const p1 = document.getElementById("page1");
-        const s = ["💖", "💕", "✨", "🌸", "💗", "⭐", "💫", "🌷"];
+        const s = [
+          "\uD83D\uDC96",
+          "\uD83D\uDC95",
+          "\u2728",
+          "\uD83C\uDF38",
+          "\uD83D\uDC97",
+          "\u2B50",
+          "\uD83D\uDCAB",
+          "\uD83C\uDF37",
+        ];
         for (let i = 0; i < 18; i++) {
           const h = document.createElement("div");
           h.className = "float-heart";
@@ -2690,12 +2728,21 @@
         }
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       MAKEUP ICONS (page 3)
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== MAKEUP ICONS (page 3) =====
+   position:absolute with % coords.
+   % is relative to #page3 (positioned ancestor) — no viewport leak. */
       function spawnMakeupIcons() {
         const p3 = document.getElementById("page3");
-        const ic = ["💄", "💋", "✨", "💅", "🌸", "💎", "🪮", "🌷"];
+        const ic = [
+          "\uD83D\uDC84",
+          "\uD83D\uDC8B",
+          "\u2728",
+          "\uD83D\uDC85",
+          "\uD83C\uDF38",
+          "\uD83D\uDC8E",
+          "\uD83E\uDEDE",
+          "\uD83C\uDF37",
+        ];
         ic.concat(ic).forEach((icon) => {
           const el = document.createElement("div");
           el.className = "makeup-float";
@@ -2705,9 +2752,7 @@
         });
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       GLITTER CANVAS (page 3)
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== GLITTER CANVAS (page 3) ===== */
       function initGlitter() {
         const c = document.getElementById("glitter-canvas"),
           ctx = c.getContext("2d");
@@ -2738,12 +2783,10 @@
         })();
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       FIREWORKS (page 3)
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== FIREWORKS (page 3) ===== */
       function startFireworks() {
-        const c = document.getElementById("firework-canvas2"),
-          sec = document.getElementById("big-wish-section");
+        const c = document.getElementById("firework-canvas2");
+        const sec = document.getElementById("big-wish-section");
         c.width = sec.offsetWidth;
         c.height = sec.offsetHeight;
         const ctx = c.getContext("2d");
@@ -2801,9 +2844,7 @@
         boom(c.width / 2, c.height / 3);
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       CONFETTI
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== CONFETTI ===== */
       function launchConfetti() {
         const COLS = [
           "#f4a0b5",
@@ -2825,9 +2866,22 @@
         playClickSound();
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       MODALS
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== MODAL ===== */
+      function openModal(emoji, caption) {
+        const ph = document.getElementById("modal-photo");
+        ph.innerHTML = "";
+        ph.textContent = emoji;
+        document.getElementById("modal-caption").textContent = caption;
+        document.getElementById("modal").classList.add("open");
+        playClickSound();
+      }
+      function openModalImg(src, caption) {
+        const ph = document.getElementById("modal-photo");
+        ph.innerHTML = `<img src="${src}" alt="${caption}" style="width:100%;max-height:60vh;object-fit:contain;border-radius:12px;display:block;margin:0 auto"/>`;
+        document.getElementById("modal-caption").textContent = caption;
+        document.getElementById("modal").classList.add("open");
+        playClickSound();
+      }
       function closeModal() {
         document.getElementById("modal").classList.remove("open");
       }
@@ -2835,11 +2889,13 @@
         if (e.target === e.currentTarget) closeModal();
       });
 
+      /* ===== STORY CHAPTER MODAL ===== */
       function openStoryModal(item) {
         document.getElementById("sm-emoji").textContent = item.emoji;
         document.getElementById("sm-chapter").textContent = item.chapter;
         document.getElementById("sm-title").textContent = item.title;
         document.getElementById("sm-text").textContent = item.text;
+        // scroll body back to top each open
         document.querySelector(".story-modal-body").scrollTop = 0;
         document.getElementById("story-modal").classList.add("open");
         playClickSound();
@@ -2851,9 +2907,7 @@
         if (e.target === e.currentTarget) closeStoryModal();
       });
 
-      /* ═══════════════════════════════════════════════════════════════════
-       TIMELINE SCROLL REVEAL
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== TIMELINE SCROLL REVEAL ===== */
       function initTimeline() {
         const obs = new IntersectionObserver(
           (es) =>
@@ -2867,9 +2921,7 @@
           .forEach((i) => obs.observe(i));
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       BACKGROUND MUSIC
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== BACKGROUND MUSIC (Web Audio API — no file needed) ===== */
       let audioCtx = null,
         musicPlaying = false;
       function startMusic() {
@@ -2904,9 +2956,7 @@
         } catch (e) {}
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       CLICK SOUND
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== CLICK SOUND ===== */
       function playClickSound() {
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)(),
@@ -2923,9 +2973,7 @@
         } catch (e) {}
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       CUSTOM CURSOR
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== CUSTOM CURSOR ===== */
       const curEl = document.getElementById("cursor"),
         trEl = document.getElementById("cursor-trail");
       document.addEventListener("mousemove", (e) => {
@@ -2935,16 +2983,17 @@
         trEl.style.top = e.clientY + "px";
       });
 
-      /* ═══════════════════════════════════════════════════════════════════
-       THEME
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== DARK / LIGHT THEME =====
+   applyTheme(isDark, withSound)
+   Toggles body.dark → all CSS token vars flip via cascade.
+   Saves to localStorage for persistence across reloads. */
       function applyTheme(isDark, withSound) {
         if (withSound === undefined) withSound = true;
         darkMode = isDark;
         document.body.classList.toggle("dark", darkMode);
         document.getElementById("theme-toggle").textContent = darkMode
-          ? "☀️ Light"
-          : "🌙 Dark";
+          ? "\u2600\uFE0F Light"
+          : "\uD83C\uDF19 Dark";
         localStorage.setItem("bdayTheme", darkMode ? "dark" : "light");
         if (withSound) playClickSound();
       }
@@ -2952,9 +3001,7 @@
         applyTheme(!darkMode);
       }
 
-      /* ═══════════════════════════════════════════════════════════════════
-       KEYBOARD NAVIGATION
-    ═══════════════════════════════════════════════════════════════════ */
+      /* ===== KEYBOARD NAVIGATION ===== */
       document.addEventListener("keydown", (e) => {
         if (e.key === "ArrowRight" || e.key === "ArrowDown")
           showPage(Math.min(3, currentPage + 1));
