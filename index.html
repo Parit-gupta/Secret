@@ -699,7 +699,7 @@
         margin-top: 0.5rem;
       }
 
-      /* Gallery grid */
+      /* ── Gallery grid ── */
       .gallery-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -708,70 +708,243 @@
         margin: 32px auto 0;
         padding: 0 20px;
       }
+
+      /* ── Outer card shell — only hover lift, no overflow:hidden so 3D works ── */
       .gallery-card {
         position: relative;
-        border-radius: 20px;
-        overflow: hidden;
-        cursor: none;
         aspect-ratio: 4/5;
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        box-shadow: 0 6px 30px var(--card-shadow);
+        cursor: none;
+        /* 3-D perspective per card */
+        perspective: 900px;
+        /* lift on hover — applied to shell so it doesn't interrupt flip */
+        transition:
+          transform 0.35s var(--ease),
+          box-shadow 0.35s var(--ease) !important;
+        border-radius: 20px;
       }
-      .gallery-card:hover {
-        transform: translateY(-8px) scale(1.02) !important;
-        box-shadow: 0 16px 50px var(--card-shadow-h) !important;
+      .gallery-card:not(.flipped):hover {
+        transform: translateY(-8px) scale(1.03);
+        filter: drop-shadow(0 16px 32px rgba(180, 80, 160, 0.28));
       }
-      .gallery-card .photo-bg {
-        width: 100%;
-        height: 100%;
+
+      /* ── Inner flipper — rotates on click ── */
+      .card-inner {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        transition: transform 0.85s cubic-bezier(0.45, 0.05, 0.15, 1);
+        border-radius: 20px;
+      }
+      .gallery-card.flipped .card-inner {
+        transform: rotateY(180deg);
+      }
+
+      /* ── Shared face styles ── */
+      .card-front,
+      .card-back {
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        overflow: hidden;
+      }
+
+      /* ════════════════════════════════
+         FRONT FACE — sentence + gradient bg
+         ════════════════════════════════ */
+      .card-front {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 3.5rem;
+        padding: 24px 20px;
         text-align: center;
-        padding: 1rem;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 6px 30px var(--card-shadow);
+        background: var(--card-bg);
+        /* blurred image hint bleeds through — set by JS inline */
+        background-size: cover;
+        background-position: center;
       }
-      .gallery-card .img-bg {
-        padding: 0;
-        overflow: hidden;
+      /* Dreamy frosted veil over the blurred bg */
+      .card-front::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(
+          160deg,
+          rgba(253, 240, 247, 0.82) 0%,
+          rgba(245, 238, 255, 0.8) 50%,
+          rgba(238, 245, 255, 0.82) 100%
+        );
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
       }
-      .gallery-card .img-bg img {
+      body.dark .card-front::before {
+        background: linear-gradient(
+          160deg,
+          rgba(42, 16, 64, 0.85) 0%,
+          rgba(18, 8, 32, 0.88) 50%,
+          rgba(13, 8, 24, 0.85) 100%
+        );
+      }
+      /* Subtle shimmer ring on hover */
+      .card-front::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(
+          ellipse at 50% 50%,
+          rgba(244, 160, 181, 0.18) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.4s ease !important;
+      }
+      .gallery-card:not(.flipped):hover .card-front::after {
+        opacity: 1;
+      }
+
+      /* Memory number badge */
+      .card-number {
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        font-family: var(--ff-s);
+        font-size: 0.72rem;
+        color: var(--rose);
+        opacity: 0.75;
+        letter-spacing: 0.06em;
+        z-index: 1;
+      }
+      /* Tap hint */
+      .card-hint {
+        position: absolute;
+        bottom: 14px;
+        right: 16px;
+        font-size: 0.72rem;
+        font-family: var(--ff-e);
+        color: var(--text-sub);
+        opacity: 0.55;
+        z-index: 1;
+        transition: opacity 0.3s ease !important;
+      }
+      .gallery-card:not(.flipped):hover .card-hint {
+        opacity: 0.9;
+      }
+
+      /* The memory sentence */
+      .card-sentence {
+        position: relative;
+        z-index: 1;
+        font-family: var(--ff-s);
+        font-size: clamp(0.95rem, 2vw, 1.15rem);
+        line-height: 1.6;
+        color: var(--text-main);
+        /* soft text glow */
+        text-shadow: 0 0 20px rgba(244, 160, 181, 0.35);
+        padding: 0 4px;
+      }
+      /* Decorative quote marks */
+      .card-sentence::before {
+        content: "\201C";
+      }
+      .card-sentence::after {
+        content: "\201D";
+      }
+
+      /* Flower emoji accent */
+      .card-accent {
+        position: relative;
+        z-index: 1;
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+        animation: accentPulse 3s ease-in-out infinite;
+      }
+      @keyframes accentPulse {
+        0%,
+        100% {
+          transform: scale(1) rotate(-4deg);
+        }
+        50% {
+          transform: scale(1.12) rotate(4deg);
+        }
+      }
+
+      /* Glow ring that pulses on the front face */
+      .card-glow {
+        position: absolute;
+        inset: -2px;
+        border-radius: 22px;
+        background: linear-gradient(
+          135deg,
+          var(--rose),
+          var(--lavender),
+          var(--peach)
+        );
+        z-index: -1;
+        opacity: 0;
+        filter: blur(10px);
+        transition: opacity 0.4s ease !important;
+      }
+      .gallery-card:not(.flipped):hover .card-glow {
+        opacity: 0.5;
+      }
+
+      /* ════════════════════════════════
+         BACK FACE — the real photo
+         ════════════════════════════════ */
+      .card-back {
+        transform: rotateY(180deg);
+        background: #000;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 10px 40px rgba(150, 60, 130, 0.35);
+      }
+      .card-back img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.4s ease !important;
+        border-radius: 20px;
+        transition: transform 0.5s ease !important;
       }
-      .gallery-card:hover .img-bg img {
-        transform: scale(1.07);
+      .gallery-card.flipped:hover .card-back img {
+        transform: scale(1.04);
       }
-      .gallery-card .photo-bg span {
-        font-family: var(--ff-s);
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.9);
-        margin-top: 0.5rem;
-      }
-      .gallery-card .overlay {
+      /* Caption ribbon on photo */
+      .card-back .photo-caption {
         position: absolute;
-        inset: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 32px 16px 14px;
         background: linear-gradient(
           to top,
-          rgba(80, 20, 60, 0.6) 0%,
-          transparent 60%
+          rgba(60, 10, 50, 0.75) 0%,
+          transparent 100%
         );
-        opacity: 0;
-        display: flex;
-        align-items: flex-end;
-        padding: 16px;
-        color: #fff;
         font-family: var(--ff-s);
-        font-size: 1rem;
-        transition: opacity 0.35s !important;
+        font-size: 0.9rem;
+        color: #fff;
+        border-radius: 0 0 20px 20px;
+        text-align: center;
+        letter-spacing: 0.02em;
       }
-      .gallery-card:hover .overlay {
-        opacity: 1;
+      /* "Tap to go back" nudge when flipped */
+      .card-back .back-hint {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        font-size: 0.68rem;
+        font-family: var(--ff-e);
+        color: rgba(255, 255, 255, 0.6);
+        background: rgba(0, 0, 0, 0.28);
+        padding: 3px 8px;
+        border-radius: 20px;
+        letter-spacing: 0.04em;
       }
 
       /* Timeline */
@@ -1511,36 +1684,51 @@
 
       // Your images — place 1.jpg … 20.jpg inside an "images/" folder next to this HTML file
       const galleryData = [
-        { img: "images/1.jpeg", caption: "First day we met \uD83C\uDF37" },
+        {
+          img: "images/1.jpeg",
+          caption: "Where laughter met the sea in Pondy \uD83C\uDF37",
+        },
         {
           img: "images/2.jpeg",
-          caption: "The birthday that started it all \uD83C\uDF88",
+          caption: "Our first outing, forever special \uD83C\uDF88",
         },
         {
           img: "images/3.jpeg",
-          caption: "Beach day adventures \uD83C\uDFD6\uFE0F",
+          caption: "Tech, Fun & Technovit \uD83C\uDFD6\uFE0F",
         },
-        { img: "images/4.jpeg", caption: "Late night talks \u2728" },
-        { img: "images/5.jpeg", caption: "Garden adventures \uD83C\uDF3B" },
+        { img: "images/4.jpeg", caption: "Library Spinner Chronicles \u2728" },
+        {
+          img: "images/5.jpeg",
+          caption: "Pongal Grace & Traditions \uD83C\uDF3B",
+        },
         {
           img: "images/6.jpeg",
-          caption: "Our favourite caf\u00E9 corner \u2615",
+          caption: "A Day Full of Technovit Energy\u00E9 corner \u2615",
         },
         {
           img: "images/7.jpeg",
-          caption: "When that song came on \uD83C\uDFB6",
+          caption: "Smiles Between the Shelves \uD83C\uDFB6",
         },
         {
           img: "images/8.jpeg",
-          caption: "Rainbow after the storm \uD83C\uDF08",
+          caption: "Where the Sea Met Memories \uD83C\uDF08",
         },
-        { img: "images/9.jpeg", caption: "One of a kind moment \u2764\uFE0F" },
+        {
+          img: "images/9.jpeg",
+          caption: "Where Confidence Spoke \u2764\uFE0F",
+        },
         {
           img: "images/10.jpeg",
-          caption: "Memories we'll never forget \uD83C\uDF1F",
+          caption: "Main Character Hair Check \uD83C\uDF1F",
         },
-        { img: "images/11.jpeg", caption: "Pure happiness \uD83D\uDE0D" },
-        { img: "images/12.jpeg", caption: "Together always \uD83D\uDC96" },
+        {
+          img: "images/11.jpeg",
+          caption: "Before the Beat Dropped \uD83D\uDE0D",
+        },
+        {
+          img: "images/12.jpeg",
+          caption: "First Outing Era Begins \uD83D\uDC96",
+        },
       ];
       const timelineData = [
         {
@@ -1590,7 +1778,7 @@
           title: "Tear Apart",
           preview:
             "Ahh… I never thought I would even be able to write the first and second chapters.....",
-          text: `IIt took a lot — thoughts, stress, and turning feelings into words. But here we are… the final chapter. And if I had to give this story a title, it would be “Tear Apart.” Not because everything broke… but because everything changed. I’ve realized something — when someone finds their life partner, things naturally shift. Time, priorities, behavior — everything adjusts. And it’s not wrong. It’s just how life moves forward. And in our story, the same happened. We both changed. In different ways, at different times. There were misunderstandings, small conflicts, and moments where things didn’t feel the same. But at the same time, there were also very fun moments — moments I’ll always remember. One important thing I learned through all this is understanding boundaries. Sometimes, caring doesn’t mean staying close all the time. Sometimes, it means giving space. I didn’t want to meddle between them as a couple. And the reason I say this is because there were moments where I was seen as a bad person — those creepy, weird looks, the things that were happening around, and even the rumours… all of it made me realize that keeping a distance was the better choice. There are also some reasons I cannot express… but they pushed me to stay at a good distance — not just from her, but from others as well. So I chose distance — not out of anger, but out of understanding. But beyond all of this, one thing never changed. Gratitude. Thank you for being my friend. Thank you for changing my ideology — because of you, I was able to talk freely again, to trust again, and to see things differently. Thank you for making my days brighter. Thank you for always smiling. And thank you for trusting me. I’ve always respected you, and I always will. It’s not like I won’t be your friend. But I also understand that with time, things change. You might say it’s not true… but somewhere, I feel it already happening. Maybe I’m just used to it — somehow, the people I get close to, I eventually have to let go. I don’t know why… but I’ve learned to accept it. And that’s okay. So wherever life takes us from here — just keep smiling, keep growing, and keep being the person you are. Because that’s exactly how I’ll always remember you.`,
+          text: `It took a lot — thoughts, stress, and turning feelings into words. But here we are… the final chapter. And if I had to give this story a title, it would be “Tear Apart.” Not because everything broke… but because everything changed. I’ve realized something — when someone finds their life partner, things naturally shift. Time, priorities, behavior — everything adjusts. And it’s not wrong. It’s just how life moves forward. And in our story, the same happened. We both changed. In different ways, at different times. There were misunderstandings, small conflicts, and moments where things didn’t feel the same. But at the same time, there were also very fun moments — moments I’ll always remember. One important thing I learned through all this is understanding boundaries. Sometimes, caring doesn’t mean staying close all the time. Sometimes, it means giving space. I didn’t want to meddle between them as a couple. And the reason I say this is because there were moments where I was seen as a bad person — those creepy, weird looks, the things that were happening around, and even the rumours… all of it made me realize that keeping a distance was the better choice. There are also some reasons I cannot express… but they pushed me to stay at a good distance — not just from her, but from others as well. So I chose distance — not out of anger, but out of understanding. But beyond all of this, one thing never changed. Gratitude. Thank you for being my friend. Thank you for changing my ideology — because of you, I was able to talk freely again, to trust again, and to see things differently. Thank you for making my days brighter. Thank you for always smiling. And thank you for trusting me. I’ve always respected you, and I always will. It’s not like I won’t be your friend. But I also understand that with time, things change. You might say it’s not true… but somewhere, I feel it already happening. Maybe I’m just used to it — somehow, the people I get close to, I eventually have to let go. I don’t know why… but I’ve learned to accept it. And that’s okay. So wherever life takes us from here — just keep smiling, keep growing, and keep being the person you are. Because that’s exactly how I’ll always remember you.`,
         },
       ];
 
@@ -2280,15 +2468,107 @@
         if (localStorage.getItem("bdayTheme") === "dark")
           applyTheme(true, false);
 
-        // Build gallery
+        // ── Meaningful sentences paired to each photo ──
+        const memorySentences = [
+          "Where laughter met the sea in Pondy",
+          "Our first outing, forever special",
+          "Tech, Fun & Technovit",
+          "Library Spinner Chronicles",
+          "Pongal Grace & Traditions",
+          "A Day Full of Technovit Energy",
+          "Smiles Between the Shelves",
+          "Where the Sea Met Memories",
+          "Where Confidence Spoke",
+          "Main Character Hair Check",
+          "Before the Beat Dropped",
+          "First Outing Era Begins",
+        ];
+        const accentEmojis = [
+          "🌸",
+          "✨",
+          "🌷",
+          "💫",
+          "🌙",
+          "☕",
+          "🎵",
+          "🌈",
+          "💖",
+          "⭐",
+          "😍",
+          "💞",
+        ];
+
+        // ── Build flip cards ──
         const grid = document.getElementById("gallery-grid");
-        galleryData.forEach((item) => {
+        galleryData.forEach((item, i) => {
+          const sentence = memorySentences[i % memorySentences.length];
+          const accent = accentEmojis[i % accentEmojis.length];
+
           const card = document.createElement("div");
           card.className = "gallery-card";
-          card.innerHTML = `<div class="photo-bg img-bg"><img src="${item.img}" alt="${item.caption}" loading="lazy" onerror="this.parentElement.style.background='linear-gradient(135deg,#f9a8d4,#c084fc)';this.style.display='none'"/></div><div class="overlay">${item.caption}</div>`;
-          card.onclick = () => openModalImg(item.img, item.caption);
+          // staggered entrance animation delay
+          card.style.setProperty("--card-delay", `${i * 80}ms`);
+
+          card.innerHTML = `
+            <div class="card-glow"></div>
+            <div class="card-inner">
+
+              <!-- FRONT: sentence -->
+              <div class="card-front">
+                <span class="card-number">✦ ${String(i + 1).padStart(2, "0")}</span>
+                <span class="card-accent">${accent}</span>
+                <p class="card-sentence">${sentence}</p>
+                <span class="card-hint">tap to reveal ↩</span>
+              </div>
+
+              <!-- BACK: real photo -->
+              <div class="card-back">
+                <img
+                  src="${item.img}"
+                  alt="${item.caption}"
+                  loading="lazy"
+                  onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#f9a8d4,#c084fc)'"
+                />
+                <div class="photo-caption">${item.caption}</div>
+                <span class="back-hint">tap to flip back</span>
+              </div>
+
+            </div>`;
+
+          // Set blurred bg hint on front face from same image
+          const front = card.querySelector(".card-front");
+          front.style.backgroundImage = `url('${item.img}')`;
+
+          // Click / tap toggles flip
+          card.addEventListener("click", () => {
+            card.classList.toggle("flipped");
+            playClickSound();
+          });
+
+          // Staggered reveal on scroll using IntersectionObserver
+          card.style.opacity = "0";
+          card.style.transform = "translateY(30px)";
+          card.style.transition = `opacity 0.7s ease var(--card-delay), transform 0.7s ease var(--card-delay)`;
+
           grid.appendChild(card);
         });
+
+        // Trigger entrance animation when cards enter viewport
+        const cardObs = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.style.opacity = "1";
+                e.target.style.transform = "translateY(0)";
+                cardObs.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.08 },
+        );
+        document
+          .querySelectorAll(".gallery-card")
+          .forEach((c) => cardObs.observe(c));
 
         // Build timeline
         const tc = document.getElementById("timeline-container");
